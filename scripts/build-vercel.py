@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+"""
+build-vercel.py — produce a clean, production-ready copy of the showcase
+for Vercel deployment.
+
+Strips:
+  • The Review Mode CSS block (between the "Review Mode" comment opener
+    in the <style> block and the closing </style>).
+  • The Review Mode <script> block (the second <script> in the file,
+    which contains the IIFE gated by ?review=1).
+
+Outputs:
+  vercel-deploy/
+    ├── design-system.html      ← stripped, retitled
+    ├── assets/logos/*.png      ← copied from source
+    └── vercel.json             ← cleanUrls + / → /design-system redirect
+
+Run from the project root:
+  $ python3 scripts/build-vercel.py
+"""
+
+import re
+import shutil
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC_HTML = ROOT / "homepage-showcase.html"
+DEPLOY = ROOT / "vercel-deploy"
+SRC_ASSETS = ROOT / "assets"
+
+VERCEL_JSON = """{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/", "destination": "/design-system", "permanent": false }
+  ]
+}
+"""
+
+def strip_review_css(html: str) -> str:
+    """
+    Remove the Review Mode CSS block from inside <style>...</style>.
+    The block starts at the comment '/* ==... Review Mode (?review=1) ...'
+    and extends to the line just before '</style>'.
+    """
+    pattern = re.compile(
+        r"\n\s*/\* =+\n\s*Review Mode \(\?review=1\)[\s\S]*?(?=</style>)",
+        flags=re.MULTILINE,
+    )
+    new, n = pattern.subn("\n", html, count=1)
+    if n != 1:
+        raise RuntimeError(
+            "Could not locate the Review Mode CSS block (expected exactly 1 match)."
+        )
+    return new
+
+
+def strip_review_script(html: str) -> str:
+    """
+    Remove the entire <script>...</script> block that contains the
+    Review Mode IIFE (identified by the 'Review Mode — activated only via ?review=1' comment).
+    """
+    pattern = re.compile(
+        r"\n<script>\s*/\* =+\s*\n\s*Review Mode — activated only via \?review=1[\s\S]*?</script>\n",
+        flags=re.MULTILINE,
+    )
+    new, n = pattern.subn("\n", html, count=1)
+    if n != 1:
+        raise RuntimeError(
+            "Could not locate the Review Mode <script> block (expected exactly 1 match)."
+        )
+    return new
+
+
+def retitle(html: str) -> str:
+    """Update the <title> for the production deploy."""
+    return html.replace(
+        "<title>VideoDB — Component Showcase</title>",
+        "<title>VideoDB — Design System</title>",
+        1,
+    )
+
+
+def main():
+    assert SRC_HTML.exists(), f"Source HTML not found: {SRC_HTML}"
+    assert SRC_ASSETS.exists(), f"Assets dir not found: {SRC_ASSETS}"
+
+    html = SRC_HTML.read_text()
+    src_lines = len(html.splitlines())
+
+    html = strip_review_css(html)
+    html = strip_review_script(html)
+    html = retitle(html)
+
+    out_lines = len(html.splitlines())
+    saved = src_lines - out_lines
+
+    # Reset deploy folder
+    if DEPLOY.exists():
+        shutil.rmtree(DEPLOY)
+    DEPLOY.mkdir(parents=True)
+
+    (DEPLOY / "design-system.html").write_text(html)
+
+    # Copy assets verbatim
+    shutil.copytree(SRC_ASSETS, DEPLOY / "assets")
+
+    (DEPLOY / "vercel.json").write_text(VERCEL_JSON)
+
+    print(f"✔ Built → {DEPLOY.relative_to(ROOT)}/")
+    print(f"  design-system.html   ({out_lines} lines, stripped {saved} review-mode lines)")
+    print(f"  assets/              (copied verbatim)")
+    print(f"  vercel.json          (cleanUrls + / → /design-system redirect)")
+    print()
+    print(f"To deploy:")
+    print(f"  cd {DEPLOY.relative_to(ROOT)}")
+    print(f"  vercel --prod")
+
+
+if __name__ == "__main__":
+    main()
