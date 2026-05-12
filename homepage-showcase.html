@@ -2188,6 +2188,10 @@ code, pre, kbd, .font-mono {
   box-sizing: border-box;
 }
 .input-pill::placeholder { color: rgba(255,255,255,0.40); }
+.input-pill:hover:not(:focus):not(.is-error) {
+  border-color: rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.06);
+}
 .input-pill:focus,
 .input-pill.is-focused {
   border-color: rgba(242,78,30,0.5);
@@ -2540,6 +2544,794 @@ code, pre, kbd, .font-mono {
   color: rgba(0,0,0,0.70);
   transition: color var(--dur-ext) var(--ease-ui);
 }
+
+/* ==========================================================================
+   New sections 22-30 — feature cards, modal, expanded forms, video embed,
+   playlists, use-case + chart, social testimonials, GitHub repo cards,
+   image ticker.
+   ========================================================================== */
+
+/* ── 22 · Feature card (icon + title + simple subcopy) ─────── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .feature-grid { grid-template-columns: repeat(3, 1fr); } }
+.feature-card {
+  background: var(--charcoal);
+  border: 1px solid var(--border-on-dark);
+  border-radius: var(--r-surface-md);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color var(--dur-ui) var(--ease-ui), background var(--dur-ui) var(--ease-ui);
+}
+.feature-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  background: var(--charcoal-hover);
+}
+.feature-card .feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-card);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-on-dark);
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 4px;
+  transition: color var(--dur-ui) var(--ease-ui);
+}
+.feature-card:hover .feature-icon { color: var(--color-primary); }
+.feature-card .feature-title {
+  font-family: 'Geist', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin: 0;
+}
+.feature-card .feature-desc {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-on-dark-muted);
+  margin: 0;
+}
+
+/* ── 23 · Modal / dialog (overlay + backdrop + box) ────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-ext) var(--ease-ui);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.modal-backdrop.is-open { opacity: 1; pointer-events: auto; }
+.modal-card {
+  background: var(--charcoal);
+  border: 1px solid var(--border-on-dark);
+  border-radius: var(--r-surface-md);
+  padding: 36px;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: var(--shadow-overlay);
+  transform: translateY(20px) scale(0.98);
+  transition: transform var(--dur-ext) var(--ease-ui);
+  position: relative;
+}
+.modal-backdrop.is-open .modal-card { transform: translateY(0) scale(1); }
+.modal-card-title {
+  font-family: 'Geist', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+.modal-card-sub {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  color: var(--text-on-dark-muted);
+  margin: 0 0 24px 0;
+}
+.modal-close-button {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 24px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #2A2A2A;
+  color: rgba(255,255,255,0.78);
+  border: 1px solid rgba(255,255,255,0.10);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  transition: transform var(--dur-ui) var(--ease-ui), background var(--dur-ui) var(--ease-ui), color var(--dur-ui) var(--ease-ui);
+}
+.modal-close-button:hover {
+  transform: translate(-50%, 24px) scale(1.06);
+  background: #3A3A3A;
+  color: #fff;
+}
+
+/* ── 24 · Forms expanded — multi-field layout, select, textarea ── */
+.form-field {
+  display: grid;
+  gap: 8px;
+}
+.form-field-label {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.section-light .form-field-label { color: var(--text-on-light); }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) { .form-row { grid-template-columns: 1fr 1fr; } }
+/* Select dropdown — pill shape like inputs */
+.input-select {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r-control);
+  padding: 14px 22px;
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.55)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 22px center;
+  background-size: 12px 8px;
+  padding-right: 48px;
+  cursor: pointer;
+  transition: border-color var(--dur-ui) var(--ease-ui), background-color var(--dur-ui) var(--ease-ui);
+}
+.input-select:focus {
+  border-color: rgba(242,78,30,0.5);
+  background-color: rgba(255,255,255,0.06);
+}
+.input-select option { background: var(--charcoal); color: #fff; }
+/* Textarea — rounded but not pill (since it's multi-line) */
+.input-textarea {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r-card);
+  padding: 14px 18px;
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #fff;
+  outline: none;
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color var(--dur-ui) var(--ease-ui), background-color var(--dur-ui) var(--ease-ui);
+}
+.input-textarea::placeholder { color: rgba(255,255,255,0.40); }
+.input-textarea:hover:not(:focus) {
+  border-color: rgba(255,255,255,0.20);
+  background-color: rgba(255,255,255,0.06);
+}
+.input-textarea:focus {
+  border-color: rgba(242,78,30,0.5);
+  background-color: rgba(255,255,255,0.06);
+}
+.input-select:hover:not(:focus) {
+  border-color: rgba(255,255,255,0.20);
+  background-color: rgba(255,255,255,0.06);
+}
+
+/* ── Input — .on-light scope (full a11y-correct light variant) ──
+   IMPORTANT: use `background-color` (not the shorthand `background`) so the
+   caret SVG on the select isn't reset to repeating defaults. Tiling-caret
+   bug discovered in c-037.
+   Fill progression: card-color → lighter (hover) → near-white (focus).
+   Inputs read as LIFTED above their card, not pressed-into it. */
+.on-light .input-pill,
+.on-light .input-select,
+.on-light .input-textarea {
+  background-color: rgba(255,255,255,0.55);
+  border-color: rgba(0,0,0,0.10);
+  color: var(--text-on-light);
+}
+.on-light .input-pill::placeholder,
+.on-light .input-textarea::placeholder {
+  color: rgba(0,0,0,0.40);
+}
+.on-light .input-pill:hover:not(:focus):not(.is-error),
+.on-light .input-select:hover:not(:focus),
+.on-light .input-textarea:hover:not(:focus) {
+  background-color: rgba(255,255,255,0.78);
+  border-color: rgba(0,0,0,0.18);
+}
+.on-light .input-pill:focus,
+.on-light .input-select:focus,
+.on-light .input-textarea:focus {
+  border-color: rgba(242,78,30,0.5);
+  background-color: rgba(255,255,255,0.96);
+}
+.on-light .input-select {
+  /* Swap the caret SVG to a dark stroke so it's visible on light bg */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='rgba(0,0,0,0.55)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 22px center;
+  background-size: 12px 8px;
+}
+
+/* ── Card-soft — .is-static modifier defeats the default hover ──
+   Used when card-soft is hosting interactive children (e.g., a form)
+   and the outer container should stay visually stable while only the
+   nested inputs/buttons get interactive states. */
+.card-soft.is-static:hover { background: var(--surface-light); }
+.card-soft.is-static:hover .tag-chip-light {
+  /* defeat the inherited tag-chip lift inside a static card */
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.08);
+  color: rgba(0,0,0,0.70);
+}
+.on-light .input-select option {
+  background: #fff;
+  color: var(--text-on-light);
+}
+.on-light .input-pill-label,
+.on-light .input-pill-helper {
+  color: var(--text-on-light-subtle);
+}
+.on-light .input-pill-helper.is-error { color: var(--color-error); }
+.on-light .form-field-label { color: var(--text-on-light); }
+
+/* ── 24b · Form sent state — celebratory ─────────────────────── */
+/* Locked fields while the button is in sent state. */
+.input-pill:disabled,
+.input-select:disabled,
+.input-textarea:disabled,
+.on-light .input-pill:disabled,
+.on-light .input-select:disabled,
+.on-light .input-textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+/* Sent button: orange stays underneath; black clip-mask grows from centre. */
+.btn-primary.is-sent,
+.btn-primary.is-sent[disabled],
+.btn-primary.is-sent[aria-disabled="true"] {
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  pointer-events: none;
+  background: var(--color-primary);
+  color: #fff;
+  opacity: 1;  /* override the global .btn[disabled] dim — sent is celebratory, not disabled */
+}
+.btn-primary.is-sent .sent-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--neutral-dark);
+  border-radius: inherit;
+  clip-path: circle(0% at 50% 50%);
+  animation: sent-clip-grow 540ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  z-index: 0;
+}
+.btn-primary.is-sent .sent-content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn-primary.is-sent .sent-bold {
+  font-weight: 600;
+  color: #fff;
+}
+.btn-primary.is-sent .sent-normal {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.78);
+}
+.btn-primary.is-sent .sent-check {
+  display: inline-grid;
+  place-items: center;
+  color: var(--color-primary);
+  opacity: 0;
+  transform: scale(0.3);
+  animation: sent-check-bounce 540ms 620ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes sent-clip-grow {
+  0%   { clip-path: circle(0% at 50% 50%); }
+  100% { clip-path: circle(130% at 50% 50%); }
+}
+@keyframes sent-check-bounce {
+  0%   { opacity: 0; transform: scale(0.3); }
+  55%  { opacity: 1; transform: scale(1.2); }
+  78%  { transform: scale(0.94); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary.is-sent .sent-fill {
+    animation: none;
+    clip-path: circle(130% at 50% 50%);
+  }
+  .btn-primary.is-sent .sent-check {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── 25 · Video embed (iframe in card chrome) ──────────────── */
+.video-embed {
+  position: relative;
+  width: 100%;
+  background: var(--charcoal);
+  border: 1px solid var(--border-on-dark);
+  border-radius: var(--r-surface-md);
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+.video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.video-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-subtle);
+  padding-top: 12px;
+}
+
+/* ── 26 · Playlist card row ──────────────────────────────────── */
+.playlists-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.playlists-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 640px) { .playlists-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .playlists-grid { grid-template-columns: repeat(5, 1fr); } }
+.playlist-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.playlist-thumb {
+  position: relative;
+  aspect-ratio: 16 / 11;
+  background: var(--charcoal);
+  border: 1px solid var(--border-on-dark);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  transition: border-color var(--dur-ext) var(--ease-ui), transform var(--dur-ext) var(--ease-ui);
+}
+.playlist-card:hover .playlist-thumb {
+  border-color: rgba(255,255,255,0.20);
+  transform: translateY(-2px);
+}
+/* Dark overlay on hover so the play button reads against any thumbnail art */
+.playlist-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-ext) var(--ease-ui);
+  z-index: 1;
+}
+.playlist-card:hover .playlist-thumb::after { opacity: 1; }
+.playlist-count {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #fff;
+  z-index: 2;
+}
+.playlist-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(10, 10, 10, 0.55);
+  border: 1.5px solid rgba(255,255,255,0.85);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  pointer-events: none;
+  z-index: 2;
+  transition: transform var(--dur-ext) var(--ease-ui),
+              background var(--dur-ext) var(--ease-ui),
+              border-color var(--dur-ext) var(--ease-ui);
+}
+.playlist-card:hover .playlist-play {
+  transform: translate(-50%, -50%) scale(1.12);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.playlist-title {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.90);
+  margin: 0;
+}
+
+/* ── 27 · Use-case + bar chart ─────────────────────────────── */
+.usecase-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 56px;
+  align-items: start;
+}
+@media (min-width: 900px) { .usecase-grid { grid-template-columns: 1fr 1fr; } }
+.usecase-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-on-light-subtle);
+  margin-bottom: 16px;
+}
+.usecase-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 32px 0 0 0;
+  display: grid;
+  gap: 24px;
+}
+.usecase-bullets li {
+  display: grid;
+  grid-template-columns: 2px 1fr;
+  gap: 16px;
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-on-light-muted);
+}
+.usecase-bullets li::before {
+  content: '';
+  display: block;
+  width: 2px;
+  background: var(--text-on-light-subtle);
+  border-radius: 1px;
+}
+.usecase-bullets li strong {
+  font-weight: 500;
+  color: var(--text-on-light);
+}
+.bar-chart {
+  display: grid;
+  gap: 14px;
+}
+.bar-chart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+.bar-row .bar-label {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  color: var(--text-on-light-muted);
+  text-align: right;
+}
+.bar-row .bar-track {
+  position: relative;
+  height: 28px;
+  background: transparent;
+  border: 1px solid var(--text-on-light-subtle);
+  border-radius: 2px;
+}
+.bar-row.is-empty .bar-track { border-color: var(--text-on-light-subtle); }
+.bar-row.is-empty-dashed .bar-track { border-style: dashed; }
+.bar-row.is-filled .bar-track {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.bar-row.is-filled .bar-label {
+  color: var(--text-on-light);
+}
+
+/* ── 28 · Social testimonial cards ─────────────────────────── */
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 640px) { .testimonial-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .testimonial-grid { grid-template-columns: repeat(3, 1fr); } }
+.testimonial-card {
+  background: var(--charcoal);
+  border: 1px solid var(--border-on-dark);
+  border-radius: var(--r-surface-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color var(--dur-ext) var(--ease-ui);
+}
+.testimonial-card:hover { border-color: rgba(255,255,255,0.18); }
+.testimonial-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2A2A2A, #161616);
+  border: 1px solid var(--border-on-dark);
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.testimonial-author {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.testimonial-name {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.testimonial-handle {
+  font-family: 'Geist', sans-serif;
+  font-size: 12px;
+  color: var(--text-on-dark-subtle);
+}
+.testimonial-platform {
+  color: var(--text-on-dark-subtle);
+  flex-shrink: 0;
+}
+.testimonial-body {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-on-dark-muted);
+  margin: 0;
+  text-wrap: pretty;
+}
+.testimonial-meta {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-subtle);
+}
+.testimonial-meta .meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.testimonial-meta .meta-item iconify-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+/* Social platform icon flips to brand orange on card hover */
+.testimonial-card:hover .testimonial-platform { color: var(--color-primary); }
+.testimonial-platform {
+  transition: color var(--dur-ext) var(--ease-ui);
+}
+
+/* ── Testimonial ticker — two rows, opposite directions ─────
+   Animation is driven via WAAPI in JS so hover can change
+   `animation.playbackRate` smoothly (no position snap that CSS
+   animation-duration changes cause).
+   See c-039 fix — earlier CSS-variable speed trick caused jitter. */
+.testimonials-ticker-wrap {
+  display: grid;
+  gap: 16px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+          mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.testimonials-ticker-row { overflow: hidden; }
+.testimonials-ticker-track {
+  display: inline-flex;
+  gap: 16px;
+  will-change: transform;
+}
+.testimonials-ticker-card {
+  flex-shrink: 0;
+  width: 380px;
+  max-width: 80vw;
+}
+
+/* ── 29 · GitHub repo cards ────────────────────────────────── */
+.repo-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) { .repo-grid { grid-template-columns: repeat(2, 1fr); } }
+.repo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--charcoal);
+  border: 1px solid var(--border-on-dark);
+  border-radius: var(--r-surface-md);
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--dur-ext) var(--ease-ui), transform var(--dur-ext) var(--ease-ui);
+}
+.repo-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+.repo-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.repo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-card);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-on-dark);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+.repo-cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color var(--dur-ui) var(--ease-ui);
+}
+.repo-card:hover .repo-cta { color: var(--color-primary); }
+.repo-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #fff;
+  margin: 0;
+}
+.repo-name .repo-org { color: var(--text-on-dark-subtle); }
+.repo-desc {
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-on-dark-muted);
+  margin: 0;
+}
+.repo-stats {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-subtle);
+}
+.repo-stats .repo-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.repo-stats .repo-stat iconify-icon {
+  font-size: 14px;
+}
+.repo-stats .repo-lang-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+/* ── 30 · Image ticker (extends text ticker) ──────────────── */
+.image-ticker .ticker-track {
+  gap: 56px;
+}
+.image-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  font-family: 'Geist', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-on-dark-subtle);
+  white-space: nowrap;
+  transition: color var(--dur-ui) var(--ease-ui);
+}
+.image-ticker-item:hover { color: #fff; }
+.image-ticker-item svg { height: 28px; width: auto; opacity: 0.65; }
 
 /* ── Reduced motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -3084,6 +3876,307 @@ body.review-mode .review-hover-target {
   .review-sidebar { width: 100vw; right: 0; }
   .review-toolbar { top: 70px; right: 12px; padding: 8px 12px; font-size: 10px; }
   .review-fab { bottom: 16px; right: 16px; }
+}
+
+/* ==========================================================================
+   v1.6 additions — ported from the VideoDB Labs build.
+   Three card patterns: .note-card (flex-based dark list row), .build-card
+   (dark feature card with rotating arrow), .research-card (publication
+   card, sister to dispatch-card). Plus the global ::selection rule.
+   ========================================================================== */
+
+/* Note row — flexbox alternative to the entry-row for dark-section list rows.
+   Uses flex instead of CSS Grid to sidestep grid intrinsic-sizing edge cases. */
+.note-card-list {
+  background: var(--charcoal, #161616);
+  border-radius: var(--r-surface-md, 16px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-on-dark, rgba(255, 255, 255, 0.08));
+}
+.note-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 28px;
+  padding: 32px 36px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--dur-ui, 150ms) var(--ease-ui, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.note-card-list .note-card:first-child { border-top: 0; }
+.note-card:hover { background: rgba(255, 255, 255, 0.04); }
+.note-card:hover .note-card-arrow { transform: translate(2px, -2px); }
+.note-card:hover .note-card-title { color: #FFFFFF; }
+.note-card-arrow {
+  flex: 0 0 32px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-primary, #F24E1E);
+  padding-top: 4px;
+  transition: transform var(--dur-ui, 150ms) var(--ease-ui, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.note-card-body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.note-card-kicker {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+.note-card-title {
+  font-family: var(--font-sans, "Geist", sans-serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+  max-width: 56ch;
+  overflow-wrap: break-word;
+  transition: color var(--dur-ui, 150ms) var(--ease-ui, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.note-card-deck {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  max-width: 70ch;
+}
+.note-card-meta {
+  flex: 0 0 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 6px;
+  padding-top: 4px;
+}
+.note-card-meta-name {
+  font-family: var(--font-sans, "Geist", sans-serif);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 4px;
+}
+.note-card-meta-line {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .note-card { flex-direction: column; gap: 16px; padding: 24px; }
+  .note-card-arrow { flex: 0 0 auto; }
+  .note-card-meta {
+    flex: 1 1 auto;
+    align-items: flex-start;
+    text-align: left;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+/* Build card — dark feature card with large rotating arrow on the right. */
+.build-card-list { display: flex; flex-direction: column; gap: 16px; }
+.build-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+  background: var(--charcoal, #161616);
+  border: 1px solid var(--border-on-dark, rgba(255, 255, 255, 0.08));
+  border-radius: var(--r-surface-md, 16px);
+  padding: 40px 44px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.build-card:hover {
+  background: var(--charcoal-hover, #1F1F1F);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+.build-card-main {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+.build-card-kicker {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+  transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.build-card:hover .build-card-kicker { opacity: 0.75; }
+.build-card-title {
+  font-family: var(--font-sans, "Geist", sans-serif);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  margin: 0;
+  max-width: 56ch;
+}
+.build-card-deck {
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  max-width: 72ch;
+}
+.build-card-arrow {
+  flex: 0 0 96px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  color: rgba(255, 255, 255, 0.20);    /* dark grey on charcoal */
+  font-size: 96px;
+  transform: rotate(0deg);             /* native — points top-right */
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.build-card:hover .build-card-arrow {
+  color: var(--color-primary, #F24E1E);
+  transform: rotate(45deg);            /* +45° clockwise → points right */
+}
+@media (max-width: 640px) {
+  .build-card { gap: 20px; padding: 28px; }
+  .build-card-arrow { flex: 0 0 56px; width: 56px; height: 56px; font-size: 56px; }
+}
+
+/* Research card — sister to dispatch-card for publication entries. */
+.research-card-list { display: grid; gap: 16px; }
+.research-card {
+  position: relative;
+  background: var(--surface-light, #E8E8EA);
+  border: 1px solid transparent;
+  border-radius: var(--r-surface-md, 16px);
+  padding: 48px 40px;
+  display: grid;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.research-card:hover {
+  background: #FFFFFF;
+  border-color: var(--border-on-light, rgba(0, 0, 0, 0.08));
+}
+.research-card-kicker {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.60);
+  margin: 0;
+}
+.research-card-title {
+  font-family: var(--font-sans, "Geist", sans-serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0;
+  max-width: 60ch;
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.research-card:hover .research-card-title { color: var(--color-primary, #F24E1E); }
+.research-card-authors {
+  font-family: var(--font-sans, "Geist", sans-serif);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: rgba(0, 0, 0, 0.60);
+  margin: 0;
+}
+.research-card-summary {
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(0, 0, 0, 0.75);
+  margin: 0;
+  max-width: 72ch;
+}
+.research-card-cta {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans, "Geist", sans-serif);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.78);
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.research-card:hover .research-card-cta { color: var(--color-primary, #F24E1E); }
+
+/* Tag chips for dark contexts (used inside note-card demos). */
+.tag-chip-dark {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Global text selection (v1.6). Orange highlight for headings + titles;
+   soft grey for body text. */
+::selection {
+  background: rgba(0, 0, 0, 0.14);
+  color: inherit;
+}
+.section-dark ::selection,
+.section-dark *::selection {
+  background: rgba(255, 255, 255, 0.18);
+  color: inherit;
+}
+h1::selection, h2::selection, h3::selection, h4::selection, h5::selection, h6::selection,
+h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::selection, h6 *::selection,
+[class*="-title"]::selection, [class*="-title"] *::selection,
+.display-xl::selection, .display-lg::selection, .display-md::selection, .heading-md::selection,
+.display-xl *::selection, .display-lg *::selection, .display-md *::selection, .heading-md *::selection {
+  background: var(--color-primary, #F24E1E);
+  color: #FFFFFF;
 }
 </style>
 </head>
@@ -4360,6 +5453,817 @@ body.review-mode .review-hover-target {
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════
+     EXPANSION · Sections 22-30 (round 10)
+     Feature cards · Modal · Forms · Video embed · Playlists ·
+     Use-case + chart · Social testimonials · GitHub repos · Image ticker
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- ─── 22 · FEATURE CARDS (DARK) ──────────────────────────── -->
+<section class="section section-dark">
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">22 /<br>Feature</div>
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          Security, packaged as feature cards.<br><span class="tone-2">Icon, title, one-line claim.</span>
+        </h2>
+        <p class="lead">Six-card grid for compact value-prop or feature lists. Each card is a charcoal surface with a token-bound icon tile, headline, and short supporting line. Hover lifts the icon to brand orange.</p>
+      </div>
+    </div>
+
+    <div class="feature-grid" style="margin-top: 48px;">
+      <div class="feature-card">
+        <div class="feature-icon"><iconify-icon icon="solar:lock-keyhole-linear" width="22" height="22"></iconify-icon></div>
+        <h3 class="feature-title">Encrypted in transit</h3>
+        <p class="feature-desc">SSL encryption during transit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><iconify-icon icon="solar:shield-linear" width="22" height="22"></iconify-icon></div>
+        <h3 class="feature-title">Encrypted at rest</h3>
+        <p class="feature-desc">Industry-standard 256-bit AES encryption at rest.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><iconify-icon icon="solar:password-linear" width="22" height="22"></iconify-icon></div>
+        <h3 class="feature-title">Protected by SOC 2</h3>
+        <p class="feature-desc">SOC 2 Type II compliant, ISO 27001 certified.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><iconify-icon icon="solar:eye-closed-linear" width="22" height="22"></iconify-icon></div>
+        <h3 class="feature-title">Privacy first</h3>
+        <p class="feature-desc">We never store your files. HIPAA &amp; GDPR compliant; sovereignty laws respected.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><iconify-icon icon="solar:folder-with-files-linear" width="22" height="22"></iconify-icon></div>
+        <h3 class="feature-title">Protected</h3>
+        <p class="feature-desc">Data and logs are untraceable back to any individual user.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><iconify-icon icon="solar:rocket-2-linear" width="22" height="22"></iconify-icon></div>
+        <h3 class="feature-title">Secure vendors</h3>
+        <p class="feature-desc">AWS, GCP, and Azure compliance reviewed regularly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 23 · MODAL / DIALOG (LIGHT) ────────────────────────── -->
+<section class="section section-light">
+  <div class="frame col-offset">
+    <div class="left-col">
+      <div class="section-code">23 /<br>Modal</div>
+    </div>
+    <div class="right-col">
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          Dialogs and overlays.<br><span class="tone-2">Backdrop blur, charcoal box, white close pill.</span>
+        </h2>
+        <p class="lead">Triggered by any action button. Backdrop blurs the page behind and dims to 55% black. The modal box sits centered, charcoal surface with overlay-panel shadow. Close affordance is a white circular button sitting just below the modal — visible and reachable without needing to find a tiny × in the corner.</p>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <button class="btn btn-primary" id="open-modal-trigger">Open enquiry modal <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal markup (lives outside .section so the backdrop covers everything) -->
+<div class="modal-backdrop" id="enquiry-modal" role="dialog" aria-modal="true" aria-labelledby="enquiry-modal-title" aria-hidden="true">
+  <div class="modal-card">
+    <h3 class="modal-card-title" id="enquiry-modal-title">Tell us about your project</h3>
+    <p class="modal-card-sub">We'll route your enquiry to the right team and respond within one business day.</p>
+
+    <form onsubmit="event.preventDefault();" style="display:grid; gap:18px;">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-field-label" for="modal-name">Name</label>
+          <input class="input-pill" type="text" id="modal-name" name="name" placeholder="Jane Smith" />
+        </div>
+        <div class="form-field">
+          <label class="form-field-label" for="modal-email">Email</label>
+          <input class="input-pill" type="email" id="modal-email" name="email" placeholder="jane@builder.com" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-field-label" for="modal-company">Company</label>
+          <input class="input-pill" type="text" id="modal-company" name="company" placeholder="Company" />
+        </div>
+        <div class="form-field">
+          <label class="form-field-label" for="modal-role">Role</label>
+          <select class="input-select" id="modal-role" name="role">
+            <option value="">Select…</option>
+            <option value="founder">Founder / Exec</option>
+            <option value="eng">Engineering</option>
+            <option value="product">Product</option>
+            <option value="design">Design</option>
+            <option value="research">Research</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-field-label" for="modal-project">Project description</label>
+        <textarea class="input-textarea" id="modal-project" name="project" placeholder="Describe your project…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; padding-top: 16px; padding-bottom: 16px;">Submit</button>
+    </form>
+
+    <button class="modal-close-button" id="close-modal-trigger" aria-label="Close enquiry modal">
+      <iconify-icon icon="solar:close-square-linear" width="16" height="16" style="display:none;"></iconify-icon>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+        <line x1="2" y1="2" x2="12" y2="12"></line>
+        <line x1="12" y1="2" x2="2" y2="12"></line>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- ─── 24 · FORMS EXPANDED (LIGHT) ─────────────────────────── -->
+<section class="section section-light">
+  <div class="frame col-offset">
+    <div class="left-col">
+      <div class="section-code">24 /<br>Forms</div>
+    </div>
+    <div class="right-col">
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          Multi-field forms.<br><span class="tone-2">Pill inputs, select, textarea, labels.</span>
+        </h2>
+        <p class="lead">Same input shape as the single-line pill input from Section 18, extended with form labels above each field, a pill-shaped select dropdown with a custom caret, and a moderate-radius textarea (pills don't work for multi-line). Two-column grid for paired fields on wider viewports, single-column below 640px.</p>
+      </div>
+
+      <div class="card-soft on-light is-static" style="margin-top: 32px; padding: 32px;">
+        <form id="enquiry-form" onsubmit="event.preventDefault();" style="display:grid; gap:20px;">
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-field-label" for="form-name">Name</label>
+              <input class="input-pill" type="text" id="form-name" name="name" placeholder="Jane Smith" />
+            </div>
+            <div class="form-field">
+              <label class="form-field-label" for="form-email">Email</label>
+              <input class="input-pill" type="email" id="form-email" name="email" placeholder="jane@builder.com" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-field-label" for="form-company">Company</label>
+              <input class="input-pill" type="text" id="form-company" name="company" placeholder="Acme, Inc." />
+            </div>
+            <div class="form-field">
+              <label class="form-field-label" for="form-role">Role</label>
+              <select class="input-select" id="form-role" name="role">
+                <option value="">Select…</option>
+                <option value="founder">Founder / Exec</option>
+                <option value="eng">Engineering</option>
+                <option value="product">Product</option>
+                <option value="design">Design</option>
+                <option value="research">Research</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-field-label" for="form-project">Project description</label>
+            <textarea class="input-textarea" id="form-project" name="project" placeholder="Describe your project…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="enquiry-submit" style="width:100%; padding-top: 16px; padding-bottom: 16px;">Submit enquiry</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 25 · VIDEO EMBED (DARK) ────────────────────────────── -->
+<section class="section section-dark">
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">25 /<br>Video</div>
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          Embedded video.<br><span class="tone-2">VideoDB player in a tokenized card.</span>
+        </h2>
+        <p class="lead">An iframe-based embed of the VideoDB player. The player handles controls, captions, and chapter logic internally; the showcase just wraps it in a card-charcoal container with hairline border, 16px radius, and a 16:9 aspect ratio. Mono caption strip below carries source attribution.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 48px; max-width: 960px;">
+      <div class="video-embed">
+        <iframe src="https://player.videodb.io/embed?v=K9S9jbTWDEo" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 26 · PLAYLISTS (DARK) ──────────────────────────────── -->
+<section class="section section-dark">
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">26 /<br>Playlists</div>
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          Curated playlists.<br><span class="tone-2">Thumbnail, count, title — five up.</span>
+        </h2>
+        <p class="lead">Row of compact playlist cards for media collections. Each card is a 16:11 thumbnail with a small bottom-right pill showing video count, plus a single-line title below. Hover lifts the thumbnail by 2px and brightens its border. Header row carries a section title, lead copy, and an off-platform CTA.</p>
+      </div>
+    </div>
+
+    <div class="playlists-head" style="margin-top: 48px;">
+      <div>
+        <h3 class="heading-md" style="font-size: 28px; color: var(--text-on-dark-display); margin-bottom: 8px;">VideoDB Playlists</h3>
+        <p class="body-md" style="color: var(--text-on-dark-muted); max-width: 480px;">Curated playlists of agent demos, tutorials, and series.</p>
+      </div>
+      <a href="#" class="btn btn-ghost-dark">View all on YouTube <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></a>
+    </div>
+
+    <div class="playlists-grid">
+      <a href="#" class="playlist-card">
+        <div class="playlist-thumb">
+          <svg viewBox="0 0 320 220" style="width:100%; height:100%;" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="220" fill="#0A0A0A" />
+            <g font-family="JetBrains Mono, monospace" font-size="48" font-weight="600" fill="#F24E1E">
+              <text x="50" y="125">SKILLS</text>
+            </g>
+            <rect x="48" y="100" width="220" height="38" fill="none" stroke="rgba(242,78,30,0.3)" stroke-width="1" />
+          </svg>
+          <span class="playlist-play"><iconify-icon icon="solar:play-bold" width="22" height="22"></iconify-icon></span>
+          <span class="playlist-count"><iconify-icon icon="solar:playlist-2-linear" width="11" height="11"></iconify-icon> 6 videos</span>
+        </div>
+        <h4 class="playlist-title">VideoDB Skills · Video Processing Tools for Developers</h4>
+      </a>
+
+      <a href="#" class="playlist-card">
+        <div class="playlist-thumb">
+          <svg viewBox="0 0 320 220" style="width:100%; height:100%;" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="220" fill="#0A0A0A" />
+            <circle cx="160" cy="110" r="78" fill="none" stroke="rgba(255,255,255,0.10)" />
+            <rect x="92" y="78" width="56" height="64" rx="10" fill="#161616" stroke="rgba(255,255,255,0.20)" />
+            <rect x="172" y="78" width="56" height="64" rx="10" fill="#F24E1E" />
+            <rect x="252" y="78" width="40" height="64" rx="10" fill="#161616" stroke="rgba(255,255,255,0.20)" />
+            <line x1="148" y1="110" x2="172" y2="110" stroke="rgba(255,255,255,0.30)" stroke-width="1" />
+            <line x1="228" y1="110" x2="252" y2="110" stroke="rgba(255,255,255,0.30)" stroke-width="1" />
+          </svg>
+          <span class="playlist-play"><iconify-icon icon="solar:play-bold" width="22" height="22"></iconify-icon></span>
+          <span class="playlist-count"><iconify-icon icon="solar:playlist-2-linear" width="11" height="11"></iconify-icon> 14 videos</span>
+        </div>
+        <h4 class="playlist-title">n8n &amp; Zapier Integrations</h4>
+      </a>
+
+      <a href="#" class="playlist-card">
+        <div class="playlist-thumb">
+          <svg viewBox="0 0 320 220" style="width:100%; height:100%;" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="220" fill="#0A0A0A" />
+            <rect x="48" y="92" width="224" height="40" rx="20" fill="#161616" stroke="rgba(255,255,255,0.12)" />
+            <text x="68" y="118" font-family="JetBrains Mono, monospace" font-size="14" fill="rgba(255,255,255,0.78)">00:00</text>
+            <circle cx="146" cy="112" r="3" fill="rgba(255,255,255,0.55)" />
+            <circle cx="170" cy="112" r="3" fill="rgba(255,255,255,0.55)" />
+            <rect x="192" y="100" width="76" height="24" rx="12" fill="#F24E1E" />
+            <text x="206" y="116" font-family="Geist, sans-serif" font-size="11" fill="#fff">Record</text>
+          </svg>
+          <span class="playlist-play"><iconify-icon icon="solar:play-bold" width="22" height="22"></iconify-icon></span>
+          <span class="playlist-count"><iconify-icon icon="solar:playlist-2-linear" width="11" height="11"></iconify-icon> 4 videos</span>
+        </div>
+        <h4 class="playlist-title">Intelligent Meeting Infrastructure · Demo Series</h4>
+      </a>
+
+      <a href="#" class="playlist-card">
+        <div class="playlist-thumb">
+          <svg viewBox="0 0 320 220" style="width:100%; height:100%;" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="220" fill="#0A0A0A" />
+            <polygon points="160,60 200,82 200,128 160,150 120,128 120,82" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" />
+            <polygon points="160,80 188,96 188,128 160,144 132,128 132,96" fill="#F24E1E" opacity="0.85" />
+            <polygon points="160,100 176,108 176,124 160,132 144,124 144,108" fill="#fff" opacity="0.9" />
+          </svg>
+          <span class="playlist-play"><iconify-icon icon="solar:play-bold" width="22" height="22"></iconify-icon></span>
+          <span class="playlist-count"><iconify-icon icon="solar:playlist-2-linear" width="11" height="11"></iconify-icon> 28 videos</span>
+        </div>
+        <h4 class="playlist-title">Build with VideoDB</h4>
+      </a>
+
+      <a href="#" class="playlist-card">
+        <div class="playlist-thumb">
+          <svg viewBox="0 0 320 220" style="width:100%; height:100%;" preserveAspectRatio="xMidYMid slice">
+            <rect width="320" height="220" fill="#0A0A0A" />
+            <rect x="98" y="92" width="48" height="40" rx="6" fill="#161616" stroke="rgba(255,255,255,0.20)" />
+            <polygon points="116,104 116,120 130,112" fill="rgba(255,255,255,0.65)" />
+            <rect x="156" y="84" width="56" height="56" rx="8" fill="#F24E1E" />
+            <polygon points="178,100 178,124 196,112" fill="#fff" />
+            <rect x="222" y="92" width="48" height="40" rx="6" fill="#161616" stroke="rgba(255,255,255,0.20)" />
+            <polygon points="240,104 240,120 254,112" fill="rgba(255,255,255,0.65)" />
+          </svg>
+          <span class="playlist-play"><iconify-icon icon="solar:play-bold" width="22" height="22"></iconify-icon></span>
+          <span class="playlist-count"><iconify-icon icon="solar:playlist-2-linear" width="11" height="11"></iconify-icon> 16 videos</span>
+        </div>
+        <h4 class="playlist-title">Director Demos</h4>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 27 · USE-CASE + CHART (LIGHT) ───────────────────────── -->
+<section class="section section-light">
+  <div class="frame col-offset">
+    <div class="left-col">
+      <div class="section-code">27 /<br>Use case</div>
+    </div>
+    <div class="right-col">
+      <div class="usecase-grid">
+        <div>
+          <div class="usecase-eyebrow">The use case</div>
+          <h2 class="display-md js-reveal-text" style="margin-bottom: 24px;">
+            Build agents that perceive video.
+          </h2>
+          <p class="body-lg" style="color: var(--text-on-light-muted); max-width: 480px;">
+            One API to ingest, index, search, and stream. Build video-aware agents without stitching ten separate tools together.
+          </p>
+          <ul class="usecase-bullets">
+            <li><span><strong>No semantic layer</strong> — raw S3 blobs have no queryable structure. Every insight needs custom ETL, every query needs a pipeline.</span></li>
+            <li><span><strong>ffmpeg breaks on change</strong> — any format update or model swap means rewriting orchestration scripts and debugging brittle pipelines.</span></li>
+            <li><span><strong>Streaming is disconnected</strong> — you can play video but you cannot query it. No path from the player to your AI layer.</span></li>
+            <li><span><strong>Glue code compounds</strong> — every new model or tool adds another integration, another failure point, another oncall incident.</span></li>
+          </ul>
+        </div>
+
+        <div class="bar-chart">
+          <div class="bar-chart-head">
+            <span class="label-bracketed-mono is-featured">[VIDEODB — ONE API]</span>
+            <span class="mono-sm" style="color: var(--color-primary)">Unified</span>
+          </div>
+          <div class="bar-row is-filled">
+            <span class="bar-label">Aqua</span>
+            <span class="bar-track"></span>
+          </div>
+          <div class="bar-row is-empty">
+            <span class="bar-label">NVIDIA</span>
+            <span class="bar-track" style="width: 70%"></span>
+          </div>
+          <div class="bar-row is-empty">
+            <span class="bar-label">Whisper</span>
+            <span class="bar-track" style="width: 55%"></span>
+          </div>
+          <div class="bar-row is-empty">
+            <span class="bar-label">ElevenLabs</span>
+            <span class="bar-track" style="width: 42%"></span>
+          </div>
+          <div class="bar-row is-empty-dashed">
+            <span class="bar-label">AssemblyAI</span>
+            <span class="bar-track" style="width: 28%"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 28 · SOCIAL TESTIMONIALS (DARK) ────────────────────── -->
+<section class="section section-dark">
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">28 /<br>Testimonials</div>
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          What people are saying.<br><span class="tone-2">Posts from X and LinkedIn.</span>
+        </h2>
+        <p class="lead">Social-style testimonial cards. Each card carries an avatar circle, name + handle, platform icon, post body, and engagement meta. Use this for evidence-style social proof — link each card to the original post when shipping.</p>
+      </div>
+    </div>
+
+    <div class="testimonial-grid" style="margin-top: 48px;">
+      <article class="testimonial-card">
+        <div class="testimonial-head">
+          <div class="testimonial-avatar">RG</div>
+          <div class="testimonial-author">
+            <span class="testimonial-name">Rohit Garg</span>
+            <span class="testimonial-handle">@rohitg · 3d</span>
+          </div>
+          <iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon>
+        </div>
+        <p class="testimonial-body">VideoDB replaced four separate tools in our stack. Ingest, index, search, and stream — one API, one mental model. Production deployment took an afternoon.</p>
+        <div class="testimonial-meta">
+          <span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 124</span>
+          <span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 18</span>
+          <span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 42</span>
+        </div>
+      </article>
+
+      <article class="testimonial-card">
+        <div class="testimonial-head">
+          <div class="testimonial-avatar">OG</div>
+          <div class="testimonial-author">
+            <span class="testimonial-name">Om Gate</span>
+            <span class="testimonial-handle">Senior Engineer · Tessera</span>
+          </div>
+          <iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon>
+        </div>
+        <p class="testimonial-body">After 6 weeks fighting our own video pipeline, we tried VideoDB on a Saturday. By Monday standup, our agent could query scenes by content. Wild.</p>
+        <div class="testimonial-meta">
+          <span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 218 reactions</span>
+          <span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 31</span>
+        </div>
+      </article>
+
+      <article class="testimonial-card">
+        <div class="testimonial-head">
+          <div class="testimonial-avatar">SS</div>
+          <div class="testimonial-author">
+            <span class="testimonial-name">Shivam Sharma</span>
+            <span class="testimonial-handle">@shivamlabs · 1w</span>
+          </div>
+          <iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon>
+        </div>
+        <p class="testimonial-body">If you're building anything that needs an agent to understand video — chapters, scene search, summarization, the works — start here. Director SDK is unreasonably good.</p>
+        <div class="testimonial-meta">
+          <span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 506</span>
+          <span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 64</span>
+          <span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 91</span>
+        </div>
+      </article>
+
+      <article class="testimonial-card">
+        <div class="testimonial-head">
+          <div class="testimonial-avatar">AC</div>
+          <div class="testimonial-author">
+            <span class="testimonial-name">Ashish Choithani</span>
+            <span class="testimonial-handle">Co-founder · Call.md</span>
+          </div>
+          <iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon>
+        </div>
+        <p class="testimonial-body">We built Call.md on top of VideoDB in a weekend. Live transcription, semantic search across past calls, agent-generated summaries — all working before the model changed underneath us.</p>
+        <div class="testimonial-meta">
+          <span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 142 reactions</span>
+          <span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 19</span>
+        </div>
+      </article>
+
+      <article class="testimonial-card">
+        <div class="testimonial-head">
+          <div class="testimonial-avatar">LG</div>
+          <div class="testimonial-author">
+            <span class="testimonial-name">Lalit Gupta</span>
+            <span class="testimonial-handle">@lalit_g · 2w</span>
+          </div>
+          <iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon>
+        </div>
+        <p class="testimonial-body">Indexed 2.4M hours of training video in a week. Median query latency is 120ms. Whoever wrote the retrieval layer deserves a raise.</p>
+        <div class="testimonial-meta">
+          <span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 281</span>
+          <span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 22</span>
+          <span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 47</span>
+        </div>
+      </article>
+
+      <article class="testimonial-card">
+        <div class="testimonial-head">
+          <div class="testimonial-avatar">AT</div>
+          <div class="testimonial-author">
+            <span class="testimonial-name">Ashutosh Trivedi</span>
+            <span class="testimonial-handle">Founder · Streamlines</span>
+          </div>
+          <iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon>
+        </div>
+        <p class="testimonial-body">The agent doesn't pass URLs around anymore — it queries the index, finds the moment, and edits the clip. This is the API the video AI space has been missing.</p>
+        <div class="testimonial-meta">
+          <span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 89 reactions</span>
+          <span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 12</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Sub-section: two-row testimonial ticker, opposite directions -->
+    <div style="margin-top: 80px;">
+      <div class="demo-label" style="color: var(--text-on-dark-subtle);">Testimonials ticker · two-row, hover slows</div>
+      <div class="testimonials-ticker-wrap">
+        <div class="testimonials-ticker-row">
+          <div class="testimonials-ticker-track">
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">RG</div><div class="testimonial-author"><span class="testimonial-name">Rohit Garg</span><span class="testimonial-handle">@rohitg · 3d</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">VideoDB replaced four separate tools in our stack. Production deployment took an afternoon.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 124</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 18</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 42</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">OG</div><div class="testimonial-author"><span class="testimonial-name">Om Gate</span><span class="testimonial-handle">Senior Engineer · Tessera</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">After 6 weeks fighting our own video pipeline, we tried VideoDB on a Saturday. By Monday standup, our agent could query scenes by content.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 218</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 31</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">SS</div><div class="testimonial-author"><span class="testimonial-name">Shivam Sharma</span><span class="testimonial-handle">@shivamlabs · 1w</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">Director SDK is unreasonably good. If you're building anything that needs an agent to understand video, start here.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 506</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 64</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 91</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">LG</div><div class="testimonial-author"><span class="testimonial-name">Lalit Gupta</span><span class="testimonial-handle">@lalit_g · 2w</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">Indexed 2.4M hours in a week. Median query latency is 120ms. Whoever wrote the retrieval layer deserves a raise.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 281</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 22</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 47</span></div>
+            </article>
+            <!-- duplicate set for seamless loop -->
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">RG</div><div class="testimonial-author"><span class="testimonial-name">Rohit Garg</span><span class="testimonial-handle">@rohitg · 3d</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">VideoDB replaced four separate tools in our stack. Production deployment took an afternoon.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 124</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 18</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 42</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">OG</div><div class="testimonial-author"><span class="testimonial-name">Om Gate</span><span class="testimonial-handle">Senior Engineer · Tessera</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">After 6 weeks fighting our own video pipeline, we tried VideoDB on a Saturday. By Monday standup, our agent could query scenes by content.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 218</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 31</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">SS</div><div class="testimonial-author"><span class="testimonial-name">Shivam Sharma</span><span class="testimonial-handle">@shivamlabs · 1w</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">Director SDK is unreasonably good. If you're building anything that needs an agent to understand video, start here.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 506</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 64</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 91</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">LG</div><div class="testimonial-author"><span class="testimonial-name">Lalit Gupta</span><span class="testimonial-handle">@lalit_g · 2w</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">Indexed 2.4M hours in a week. Median query latency is 120ms. Whoever wrote the retrieval layer deserves a raise.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 281</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 22</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 47</span></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="testimonials-ticker-row is-reverse">
+          <div class="testimonials-ticker-track">
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">AC</div><div class="testimonial-author"><span class="testimonial-name">Ashish Choithani</span><span class="testimonial-handle">Co-founder · Call.md</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">We built Call.md on top of VideoDB in a weekend. Live transcription, semantic search, agent-generated summaries — all working before the model changed underneath us.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 142</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 19</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">AT</div><div class="testimonial-author"><span class="testimonial-name">Ashutosh Trivedi</span><span class="testimonial-handle">Founder · Streamlines</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">The agent doesn't pass URLs around anymore — it queries the index, finds the moment, and edits the clip. This is the API the video AI space has been missing.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 89</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 12</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">SN</div><div class="testimonial-author"><span class="testimonial-name">Sankalp Nagaonkar</span><span class="testimonial-handle">@sankalpn · 5d</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">RTStream is the missing piece. Real-time video into an agent loop with sub-second latency. This unlocks a whole class of products.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 312</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 28</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 56</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">JK</div><div class="testimonial-author"><span class="testimonial-name">Jamie Kim</span><span class="testimonial-handle">VP Eng · Lensgrid</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">We've been waiting years for someone to ship the video-database layer properly. The Director SDK reads like it was designed by someone who's actually shipped these systems.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 174</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 24</span></div>
+            </article>
+            <!-- duplicate set for seamless loop -->
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">AC</div><div class="testimonial-author"><span class="testimonial-name">Ashish Choithani</span><span class="testimonial-handle">Co-founder · Call.md</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">We built Call.md on top of VideoDB in a weekend. Live transcription, semantic search, agent-generated summaries — all working before the model changed underneath us.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 142</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 19</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">AT</div><div class="testimonial-author"><span class="testimonial-name">Ashutosh Trivedi</span><span class="testimonial-handle">Founder · Streamlines</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">The agent doesn't pass URLs around anymore — it queries the index, finds the moment, and edits the clip. This is the API the video AI space has been missing.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 89</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 12</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">SN</div><div class="testimonial-author"><span class="testimonial-name">Sankalp Nagaonkar</span><span class="testimonial-handle">@sankalpn · 5d</span></div><iconify-icon class="testimonial-platform" icon="ri:twitter-x-line" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">RTStream is the missing piece. Real-time video into an agent loop with sub-second latency. This unlocks a whole class of products.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:heart-linear" width="14" height="14"></iconify-icon> 312</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 28</span><span class="meta-item"><iconify-icon icon="solar:repeat-linear" width="14" height="14"></iconify-icon> 56</span></div>
+            </article>
+            <article class="testimonial-card testimonials-ticker-card">
+              <div class="testimonial-head"><div class="testimonial-avatar">JK</div><div class="testimonial-author"><span class="testimonial-name">Jamie Kim</span><span class="testimonial-handle">VP Eng · Lensgrid</span></div><iconify-icon class="testimonial-platform" icon="ri:linkedin-fill" width="16" height="16"></iconify-icon></div>
+              <p class="testimonial-body">We've been waiting years for someone to ship the video-database layer properly. The Director SDK reads like it was designed by someone who's actually shipped these systems.</p>
+              <div class="testimonial-meta"><span class="meta-item"><iconify-icon icon="solar:like-linear" width="14" height="14"></iconify-icon> 174</span><span class="meta-item"><iconify-icon icon="solar:chat-round-linear" width="14" height="14"></iconify-icon> 24</span></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 29 · GITHUB REPO CARDS (DARK) ──────────────────────── -->
+<section class="section section-dark">
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">29 /<br>Open Source</div>
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          Open source on GitHub.<br><span class="tone-2">SDKs, demos, agent recipes — all MIT.</span>
+        </h2>
+        <p class="lead">Repo cards for our public packages. Each card carries a GitHub icon badge, the org/repo slug in JetBrains Mono, description, language indicator with brand-orange dot, and star + fork counts. Card hover lifts the border to 18% white and translates the CTA orange.</p>
+      </div>
+    </div>
+
+    <div class="repo-grid" style="margin-top: 48px;">
+      <a href="https://github.com/video-db/videodb-python" class="repo-card">
+        <div class="repo-head">
+          <div class="repo-icon"><iconify-icon icon="ri:github-fill" width="20" height="20"></iconify-icon></div>
+          <span class="repo-cta">Open repo <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></span>
+        </div>
+        <h3 class="repo-name"><span class="repo-org">videodb /</span> videodb-python</h3>
+        <p class="repo-desc">Official Python SDK. Ingest, index, search, and stream video with one client. Async support, typed responses.</p>
+        <div class="repo-stats">
+          <span class="repo-stat"><span class="repo-lang-dot"></span> Python</span>
+          <span class="repo-stat"><iconify-icon icon="solar:star-linear" width="14" height="14"></iconify-icon> 1.2k</span>
+          <span class="repo-stat"><iconify-icon icon="solar:branching-paths-down-linear" width="14" height="14"></iconify-icon> 142</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/video-db/director" class="repo-card">
+        <div class="repo-head">
+          <div class="repo-icon"><iconify-icon icon="ri:github-fill" width="20" height="20"></iconify-icon></div>
+          <span class="repo-cta">Open repo <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></span>
+        </div>
+        <h3 class="repo-name"><span class="repo-org">videodb /</span> director</h3>
+        <p class="repo-desc">Pipeline orchestrator. Compose primitives into reusable video workflows. CLI + REST API + TypeScript bindings.</p>
+        <div class="repo-stats">
+          <span class="repo-stat"><span class="repo-lang-dot"></span> TypeScript</span>
+          <span class="repo-stat"><iconify-icon icon="solar:star-linear" width="14" height="14"></iconify-icon> 864</span>
+          <span class="repo-stat"><iconify-icon icon="solar:branching-paths-down-linear" width="14" height="14"></iconify-icon> 73</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/video-db/videodb-node" class="repo-card">
+        <div class="repo-head">
+          <div class="repo-icon"><iconify-icon icon="ri:github-fill" width="20" height="20"></iconify-icon></div>
+          <span class="repo-cta">Open repo <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></span>
+        </div>
+        <h3 class="repo-name"><span class="repo-org">videodb /</span> videodb-node</h3>
+        <p class="repo-desc">Node.js / TypeScript SDK. Bundled for browser and server. Streaming support, retry/backoff, telemetry hooks.</p>
+        <div class="repo-stats">
+          <span class="repo-stat"><span class="repo-lang-dot"></span> TypeScript</span>
+          <span class="repo-stat"><iconify-icon icon="solar:star-linear" width="14" height="14"></iconify-icon> 612</span>
+          <span class="repo-stat"><iconify-icon icon="solar:branching-paths-down-linear" width="14" height="14"></iconify-icon> 58</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/video-db/skills-sdk" class="repo-card">
+        <div class="repo-head">
+          <div class="repo-icon"><iconify-icon icon="ri:github-fill" width="20" height="20"></iconify-icon></div>
+          <span class="repo-cta">Open repo <iconify-icon icon="solar:arrow-right-up-linear" width="14" height="14"></iconify-icon></span>
+        </div>
+        <h3 class="repo-name"><span class="repo-org">videodb /</span> skills-sdk</h3>
+        <p class="repo-desc">Build reusable agent skills against VideoDB primitives. Decorator API, schema-typed inputs, hot-reload in dev.</p>
+        <div class="repo-stats">
+          <span class="repo-stat"><span class="repo-lang-dot"></span> Python</span>
+          <span class="repo-stat"><iconify-icon icon="solar:star-linear" width="14" height="14"></iconify-icon> 348</span>
+          <span class="repo-stat"><iconify-icon icon="solar:branching-paths-down-linear" width="14" height="14"></iconify-icon> 27</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 30 · IMAGE TICKER (DARK) ───────────────────────────── -->
+<section class="section section-dark" style="padding: 0;">
+  <div class="frame">
+    <div class="ticker image-ticker">
+      <div class="ticker-track">
+        <span class="image-ticker-item">VideoDB</span>
+        <span class="image-ticker-item">Call.md</span>
+        <span class="image-ticker-item">Bloom</span>
+        <span class="image-ticker-item">Pair Programmer</span>
+        <span class="image-ticker-item">Agentic Streams</span>
+        <span class="image-ticker-item">Tessera</span>
+        <span class="image-ticker-item">Streamlines</span>
+        <span class="image-ticker-item">Spext</span>
+        <!-- duplicate for seamless loop -->
+        <span class="image-ticker-item">VideoDB</span>
+        <span class="image-ticker-item">Call.md</span>
+        <span class="image-ticker-item">Bloom</span>
+        <span class="image-ticker-item">Pair Programmer</span>
+        <span class="image-ticker-item">Agentic Streams</span>
+        <span class="image-ticker-item">Tessera</span>
+        <span class="image-ticker-item">Streamlines</span>
+        <span class="image-ticker-item">Spext</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 31 · LABS CARDS (DARK) ──────────────────────────────
+     v1.6 additions ported from the VideoDB Labs build:
+     - .note-card (flexbox-based dark list row, sister to entry-row)
+     - .build-card (dark feature card with rotating arrow)
+-->
+<section class="section section-dark">
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">31 /<br>Labs Cards</div>
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          Two dark card patterns,<br>
+          <span class="tone-2">from the Labs build.</span>
+        </h2>
+        <p>Both use flexbox instead of CSS Grid to sidestep intrinsic-sizing edge cases at intermediate viewports. Note row is the dark list-row primitive; build card is the dark feature card with a large rotating arrow that carries the affordance.</p>
+      </div>
+    </div>
+
+    <h3 class="heading-md" style="margin-top: 64px; max-width: 28ch;">
+      Note row<br>
+      <span class="tone-2">flexbox list rows for dark sections.</span>
+    </h3>
+
+    <div class="note-card-list" style="margin-top: 32px;">
+        <a class="note-card" href="#">
+          <span class="note-card-arrow" aria-hidden="true">↳</span>
+          <div class="note-card-body">
+            <p class="note-card-kicker">Operations</p>
+            <h3 class="note-card-title">Stop paying the TCP/TLS tax: connection pooling for Python services</h3>
+            <p class="note-card-deck">Replacing bare requests calls with a shared session is not glamorous. It is table stakes for production services that call the same hosts repeatedly.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <span class="tag-chip-dark">python</span>
+              <span class="tag-chip-dark">latency</span>
+              <span class="tag-chip-dark">lambda</span>
+            </div>
+          </div>
+          <div class="note-card-meta">
+            <span class="note-card-meta-name">Rohit Garg</span>
+            <span class="note-card-meta-line">Field Note</span>
+            <span class="note-card-meta-line">Apr 20, 2026 · 2 min</span>
+          </div>
+        </a>
+
+        <a class="note-card" href="#">
+          <span class="note-card-arrow" aria-hidden="true">↳</span>
+          <div class="note-card-body">
+            <p class="note-card-kicker">Frontend Performance</p>
+            <h3 class="note-card-title">One CORS header that removed hundreds of milliseconds from repeated API calls</h3>
+            <p class="note-card-deck">A practical note on preflight caching, custom auth headers, and why OPTIONS requests quietly dominate app latency on slower connections.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <span class="tag-chip-dark">frontend</span>
+              <span class="tag-chip-dark">api</span>
+              <span class="tag-chip-dark">latency</span>
+            </div>
+          </div>
+          <div class="note-card-meta">
+            <span class="note-card-meta-name">Om Gate</span>
+            <span class="note-card-meta-line">Field Note</span>
+            <span class="note-card-meta-line">Apr 17, 2026 · 2 min</span>
+          </div>
+        </a>
+      </div>
+
+      <h3 class="heading-md" style="margin-top: 96px; max-width: 28ch;">
+        Build card<br>
+        <span class="tone-2">dark feature card with a rotating arrow.</span>
+      </h3>
+
+      <div class="build-card-list" style="margin-top: 32px;">
+        <a class="build-card" href="#">
+          <div class="build-card-main">
+            <p class="build-card-kicker">How I Built · Ashish</p>
+            <h3 class="build-card-title">How I built CallMD: AI call intelligence on top of VideoDB</h3>
+            <p class="build-card-deck">A practical build story for a local-first call intelligence app that records calls, transcribes speakers, generates live nudges, and exports structured Markdown.</p>
+          </div>
+          <span class="build-card-arrow" aria-hidden="true">
+            <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
+          </span>
+        </a>
+
+        <a class="build-card" href="#">
+          <div class="build-card-main">
+            <p class="build-card-kicker">How I Built · Priya</p>
+            <h3 class="build-card-title">How I built Pair Programmer with live screen, voice, and system-audio context</h3>
+            <p class="build-card-deck">An end-to-end teardown of the agent runtime that turns macOS sessions into a continuously updated context window for coding agents.</p>
+          </div>
+          <span class="build-card-arrow" aria-hidden="true">
+            <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
+          </span>
+        </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 32 · RESEARCH CARD (LIGHT) ─────────────────────────── -->
+<section class="section section-light">
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">32 /<br>Research Card</div>
+      <div class="section-heading">
+        <h2 class="display-md js-reveal-text">
+          A sister pattern to the dispatch card,<br>
+          <span class="tone-2">sized for publication entries.</span>
+        </h2>
+        <p>Same lift-to-white hover personality. Use this instead of an entry-row when the content shape is richer than a list row — long authors strings, multi-line summaries, off-site CTAs.</p>
+      </div>
+    </div>
+
+    <div class="research-card-list" style="margin-top: 64px;">
+        <a class="research-card" href="#">
+          <p class="research-card-kicker">arXiv · Mar 14, 2026</p>
+          <h3 class="research-card-title">Do thought streams matter? Evaluating reasoning in vision-language models</h3>
+          <p class="research-card-authors">Shivam Sharma, Sankalp Nagaonkar, Ashish Choithani, Ashutosh Trivedi</p>
+          <p class="research-card-summary">We introduce a probing benchmark that isolates the contribution of intermediate reasoning tokens in long-context VLMs, and find that suppressing them at inference time costs surprisingly little accuracy on standard multimodal QA.</p>
+          <span class="research-card-cta">
+            Read the paper
+            <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
+          </span>
+        </a>
+
+        <a class="research-card" href="#">
+          <p class="research-card-kicker">Talk · AGI Summit · Feb 28, 2026</p>
+          <h3 class="research-card-title">Querying video like a database: building the agent-ready layer over continuous media</h3>
+          <p class="research-card-authors">Ashutosh Trivedi, with the VideoDB team</p>
+          <p class="research-card-summary">A walkthrough of the six primitives that make video addressable to agents — ingest, index, memory, search, director, RTStream — and the design choices behind each.</p>
+          <span class="research-card-cta">
+            Watch the talk
+            <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon>
+          </span>
+        </a>
+    </div>
+  </div>
+</section>
+
 <!-- ─── FOOTER ─────────────────────────────────────────────── -->
 <footer class="site-footer">
   <div class="frame">
@@ -4658,6 +6562,71 @@ document.querySelectorAll('[role="group"]').forEach(group => {
 });
 
 /* ==========================================================================
+   Testimonials ticker — Web Animations API for smooth speed control.
+   Changing animation.playbackRate doesn't snap the position the way
+   swapping CSS animation-duration does.
+   ========================================================================== */
+(function () {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) return; // Honor user preference — leave tracks static.
+
+  document.querySelectorAll('.testimonials-ticker-row').forEach(row => {
+    const track = row.querySelector('.testimonials-ticker-track');
+    if (!track) return;
+    const isReverse = row.classList.contains('is-reverse');
+
+    const anim = track.animate(
+      [
+        { transform: 'translateX(0%)' },
+        { transform: 'translateX(-50%)' }
+      ],
+      {
+        duration: 90000,
+        iterations: Infinity,
+        easing: 'linear',
+        direction: isReverse ? 'reverse' : 'normal'
+      }
+    );
+
+    // Smooth slowdown on hover — playbackRate change is interpolated by
+    // the browser without resetting the current position.
+    row.addEventListener('mouseenter', () => { anim.playbackRate = 0.18; });
+    row.addEventListener('mouseleave', () => { anim.playbackRate = 1; });
+  });
+})();
+
+/* ==========================================================================
+   Modal — open/close + click-outside + Escape to dismiss
+   ========================================================================== */
+(function () {
+  const modal = document.getElementById('enquiry-modal');
+  const trigger = document.getElementById('open-modal-trigger');
+  const closeBtn = document.getElementById('close-modal-trigger');
+  if (!modal || !trigger || !closeBtn) return;
+
+  function openModal() {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    // Focus the first input for keyboard users
+    const firstInput = modal.querySelector('input, select, textarea');
+    if (firstInput) setTimeout(() => firstInput.focus(), 100);
+  }
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    trigger.focus();
+  }
+  trigger.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+  });
+})();
+
+/* ==========================================================================
    Pill input — buzz/shake animation on invalid submit
    ========================================================================== */
 document.querySelectorAll('form').forEach(form => {
@@ -4681,6 +6650,60 @@ document.querySelectorAll('form').forEach(form => {
     input.addEventListener('input', () => input.classList.remove('is-error'));
   }
 });
+
+/* ==========================================================================
+   Section 24 enquiry form — Sent confirmation state + 5s auto-reset
+   ========================================================================== */
+(function() {
+  const form = document.getElementById('enquiry-form');
+  const submit = document.getElementById('enquiry-submit');
+  if (!form || !submit) return;
+
+  const originalSubmitHTML = submit.innerHTML;
+  const sentHTML =
+    '<span class="sent-fill" aria-hidden="true"></span>' +
+    '<span class="sent-content">' +
+      '<span class="sent-bold">Thanks for reaching out!</span>' +
+      '<span class="sent-normal">Our team will get in touch shortly.</span>' +
+      '<span class="sent-check" aria-hidden="true">' +
+        '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' +
+          '<polyline points="3,8.5 6.5,12 13,4.5"></polyline>' +
+        '</svg>' +
+      '</span>' +
+    '</span>';
+  const fields = form.querySelectorAll('.input-pill, .input-select, .input-textarea');
+  let resetTimer = null;
+
+  function enterSent() {
+    fields.forEach(f => { f.disabled = true; });
+    submit.disabled = true;
+    submit.classList.add('is-sent');
+    submit.setAttribute('aria-disabled', 'true');
+    submit.innerHTML = sentHTML;
+  }
+
+  function leaveSent() {
+    fields.forEach(f => { f.disabled = false; });
+    form.reset();
+    submit.disabled = false;
+    submit.classList.remove('is-sent');
+    submit.removeAttribute('aria-disabled');
+    submit.innerHTML = originalSubmitHTML;
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (submit.disabled) return;
+
+    // Match the global buzz validator — only proceed when email is valid.
+    const email = form.querySelector('.input-pill[type="email"]');
+    if (!email || !email.value || !email.checkValidity()) return;
+
+    enterSent();
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(leaveSent, 5000);
+  });
+})();
 
 /* ==========================================================================
    Synchronized comparison — paired hover across two columns

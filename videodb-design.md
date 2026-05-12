@@ -1,8 +1,8 @@
 ---
-version: "videodb-design-v1.5"
+version: "videodb-design-v1.7"
 name: "VideoDB — Agentic Website Design System"
 description: "Single source of truth for videodb.io. Editorial typography on Geist, deliberate 8px spacing, restrained motion, dual-radius shape language, and a confident dark↔light section alternation anchored by one brand orange (#F24E1E). Suited to product narratives, infrastructure storytelling, and interface-first landing experiences."
-status: "v1.5 — folds in components ported from the VideoDB Labs page after a review pass: anchor pill, tag chip (light + dark with lift-on-parent-hover), byline, binary toggle, diagram card (with rows / fail / success states, side-by-side grid, row hover lift), pill input (with focus / error / buzz states), entry row, project tile (with hover-triggered motion patterns), dispatch card (with hover personality — surface lifts to white, subtle stroke, title + CTA flip to brand orange). Adds semantic error color (`--color-error: #E5484D`, distinct from brand orange) for destructive/invalid feedback only. Documents the buzz keyframe pattern. Future changes require a version bump."
+status: "v1.7 — adds the showcase additions from rounds 12-14: feature-card row (3-up icon + title + body on light), modal/dialog primitive (backdrop scrim + charcoal card + dark-grey close button with a plain × glyph, NOT a circled-icon pill), multi-field forms (form-row two-column grid, .input-select with custom caret SVG, .input-textarea moderate-radius surface, plus the .on-light scope which inverts surface direction so inputs sit LIGHTER than the host card and progress to near-white on focus), video-embed (16:9 iframe in card chrome, no caption), playlist row (thumbnail + play badge + video-count pill, with a 45%-black hover overlay), use-case + chart composition, social testimonials ticker (two rows running opposite directions via WAAPI playbackRate — switched off the CSS animation-duration approach which caused position-snapping jitter on hover), repo cards (sized-up text variant of card-soft for GitHub-style attribution), and image ticker (horizontal marquee variant of the existing ticker). Also documents two new structural conventions: the `.is-static` modifier on `.card-soft` (suppresses the inherited card hover when nested interactive children own the hover state), and the celebratory sent-state pattern for form submit buttons (black clip-mask grows from centre over orange surface + two-tone copy + bouncing orange check + 5s auto-reset, with an `opacity: 1` override on `[disabled]` so the global button-disabled dimming doesn't mute the success). Future changes require a version bump."
 supersedes:
   - "uploads/NEO-videodb-design.md (v1.1)"
   - "references/neu-videodb-DESIGN.md (Nexus / Vision & Logic ancestor)"
@@ -471,9 +471,9 @@ The page reads as a **centered framed composition**: a 1400px max-width column w
 - **Gaps:** 8px (tight UI), 16px (related elements), 32px (sections within section).
 - **Internal frame:** 1px hairline `border-x` on the inner column, dark or light variant per mode.
 
-### Mandatory column offset (light sections)
+### Mandatory column offset (every section, light or dark)
 
-Every light section content area uses the same 12-column offset structure as the canonical "About" fold. **Content does not span the full 12 columns.**
+Every section's content area — light **and** dark — uses the same 12-column offset structure as the canonical "About" fold. **Content does not span the full 12 columns.** This rule was originally written for light sections, but applies identically to dark ones; the magazine cadence is mode-independent.
 
 - **Left column (`md:col-span-3 lg:col-span-2`):** Section label in `mono-sm`, often broken across two or three lines (`02 /<br>The Platform`).
 - **Right column (`md:col-span-9 lg:col-span-10 max-w-5xl`):** All content — headings, cards, body, lists.
@@ -481,6 +481,32 @@ Every light section content area uses the same 12-column offset structure as the
 Inside the right column, secondary heading + supporting copy uses an **8/4 grid split**: heading on cols 1–8, body on cols 9–12, body aligned to the bottom of the heading via `self-end`.
 
 This offset is what makes the system feel editorial rather than dashboard-like. Skipping it (full-bleed content within the 1400px frame) creates the "cramped" feeling — content runs too long horizontally and loses the magazine cadence.
+
+### Inner-frame hairline padding (every section, mandatory)
+
+A separate, finer-grained rule from the 2/10 column offset above — and one that's easy to miss until content sits flush against the vertical hairline borders and looks "jammed".
+
+The `.frame` element (the 1400px max-width container with `border-left` / `border-right` hairlines) **must carry `padding: 0 24px` on every section**. The padding is what creates breathing room between the hairlines and any content inside the frame. Without it, section-codes, headings, cards, and grids butt directly against the 1px vertical borders.
+
+```html
+<section class="section section-dark">
+  <!-- inline padding on .frame is the mandatory bit -->
+  <div class="frame" style="padding: 0 24px;">
+    <div class="section-heading-wrap" style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+      <div class="section-code">31 /<br>Labs Cards</div>
+      <div class="section-heading">…</div>
+    </div>
+
+    <!-- additional demo content as siblings of .section-heading-wrap,
+         still inside .frame and inheriting its inline padding -->
+    <div class="note-card-list">…</div>
+  </div>
+</section>
+```
+
+**Why inline rather than a default CSS rule on `.frame`.** Every existing section in the showcase carries the inline `style="padding: 0 24px;"`. Moving it to the `.frame` rule itself would double-pad those existing sections. Until a coordinated refactor of the showcase happens, inline is the pattern — copy it onto every new section. If you're seeing content flush against the hairlines, this is the rule that's missing.
+
+Light sections without the offset OR the hairline padding read as flat and unstructured; dark sections without them lose the breathing room around hairlines and read as if the content is jammed against the frame edges.
 
 ---
 
@@ -639,7 +665,21 @@ A two-option segmented control. Use when a UI needs a single binary choice: List
 - **Lifecycle card** — `#E8E8EA` background, hover flips to white + adds `shadows.lift-light` + expands description `max-height` from 2.5em to 5em over 300ms. Pure CSS, no JS.
 - **Entry row (`.entry-row`)** — Wide horizontal list-row card, used for blog/doc/changelog/field-note lists. Three-column grid: arrow indicator left (`↳`, 56px wide column), title + category + description + tag-chip-row center, mono-meta column right (author + kind + date · read). Default surface `#E8E8EA`, hairline `border-top: rgba(0,0,0,0.08)` between rows. Hover: subtle `rgba(0,0,0,0.025)` background, arrow translates `+2px, -2px` and tints brand orange, title goes from `text-black/88` to full black. Title typography is Geist 24px / 400 / -0.02em / 1.25. Renamed from the Labs page's `.row-card` to avoid colliding with the **numbered row card** above — they're distinct patterns. Group multiple entries inside an `.entry-row-list` wrapper (`#E8E8EA` background, `r-surface-md` radius, `overflow: hidden`).
 - **Project tile (`.project-tile`)** — Card with an abstract SVG art panel on top (`200px` tall, `#0A0A0A` background, hairline bottom border) and content below (eyebrow + name + description + mono CTA). Card surface `#161616`, 16px radius, hairline `border-on-dark`. Hover lifts `translateY(-2px)`, border brightens to `0.18` white, CTA flips to brand orange. The art SVG is composed from system tokens — solid fills only (no gradients), interior padding so elements never touch the container edges, and **hover-triggered CSS animation** unique per tile (bars pulse, rings rotate, code-lines blink, dashed lines flow). See "Project tile motion" below.
-- **Dispatch card (`.dispatch-card`)** — Issue / changelog / newsletter card with an absolutely-positioned mono tag (`#001 · Dispatch`, top-right). Surface `#E8E8EA`, 16px radius, padding 36px, `border: 1px solid transparent` by default. **Hover personality (mandatory):** surface lifts to **white** (NOT to `surface-light-hover` — that's wrong direction), the transparent border becomes visible (`border-on-light`), and both the card title and the trailing CTA flip to brand orange. 300ms transitions. The hover should feel like the card "wakes up" — surface brightens, an outline appears, and the orange highlights mark where the card speaks.
+- **Dispatch card (`.dispatch-card`)** — Issue / changelog / newsletter card with an absolutely-positioned mono tag (`#001 · Dispatch`, top-right). Surface `#E8E8EA`, 16px radius, padding 36–48px (the larger end reads better with body copy), `border: 1px solid transparent` by default. **Hover personality (mandatory):** surface lifts to **white** (NOT to `surface-light-hover` — that's wrong direction), the transparent border becomes visible (`border-on-light`), and both the card title and the trailing CTA flip to brand orange. 300ms transitions. The hover should feel like the card "wakes up" — surface brightens, an outline appears, and the orange highlights mark where the card speaks. **This hover pattern is reusable** — see `.research-card` and `.build-card` below, which share the same affordance (with mode-appropriate surfaces).
+- **Research card (`.research-card`)** — Sister pattern to `.dispatch-card`, sized for publication entries (papers, preprints, talks). Soft `#E8E8EA` surface, 16px radius, 48px×40px padding. Anatomy: kicker (`venue · date` in `mono-xs` uppercase), title (Geist 22px / 400 / -0.02em / 1.25), authors (Geist 13px subtle ink), summary (Geist 15px muted, 72ch max), trailing `Read the paper →` CTA. **Same hover personality as `.dispatch-card`** — surface lifts to white, transparent border becomes visible, title + CTA flip to brand orange over 300ms. Use this in place of `.entry-row` when the content shape is too rich for a list-row (a long author string that won't fit a right-side meta column, a summary that benefits from generous padding).
+- **Note row (`.note-card`)** — **Flexbox-based** dark list-row, sister to `.entry-row` but built without CSS Grid. Use when an entry-row needs to sit on a `.section-dark` surface, OR when the entry-row's grid auto-flow is misbehaving at intermediate viewport widths (the `minmax(0, 1fr)` + `auto` meta-column has intrinsic-sizing edge cases at certain widths that cause the meta to wrap below the main content — flex doesn't have that ambiguity). Anatomy: `display: flex; flex-direction: row; align-items: flex-start; gap: 28px`. Three flex children — `.note-card-arrow` (`flex: 0 0 32px`, brand-orange `↳` glyph that translates `+2px, -2px` on parent hover), `.note-card-body` (`flex: 1 1 0; min-width: 0`, vertical stack of kicker + title + deck + tag-chip-row), `.note-card-meta` (`flex: 0 0 180px`, right-aligned vertical stack of author name on top, then type, then date · read-time — all `white-space: nowrap`). Container `.note-card-list` is `display: flex; flex-direction: column` with hairline `border-on-dark` borders between rows. Charcoal `#161616` surface, 16px radius, 1px hairline. Hover: row background lifts to `rgba(255, 255, 255, 0.04)`, arrow translates, title brightens to full white. Mobile (≤640px) flex-direction flips to column; arrow on top, body middle, meta as a wrapping inline row of mono labels at the bottom. **Default to `.entry-row` for the spec'd 3-column composition; reach for `.note-card` when grid intrinsic-sizing fights you, or when dark-section composition needs a fresh primitive.**
+- **Build card (`.build-card`)** — Dark feature card for "how I built" / build-story content. **Flexbox row** (not grid). Two flex children: `.build-card-main` (text block — kicker, title, deck) on the left, `.build-card-arrow` on the right. Charcoal `#161616` surface, 16px radius, 40px × 44px padding (drops to 28px on mobile). **Arrow anatomy:** 96×96 cell, `font-size: 96px`, default color `rgba(255, 255, 255, 0.20)` (dark grey on charcoal), `transform: rotate(0deg)` — icon sits at its native top-right orientation. On hover the arrow color flips to brand orange and rotates `+45deg` clockwise so the tip points right; both transitions run 300ms `ease-ui`. **Hover personality:** card lifts `translateY(-2px)`, surface goes to `--charcoal-hover #1F1F1F`, border-on-dark-strong becomes visible, and the kicker fades to `opacity: 0.75` (subtle dim — kicker stays legible, signaling rank). The title color **does not** change on hover — the rotating arrow + kicker fade carries the affordance.
+- **Feature card row (`.feature-card`)** — 3-up grid of light feature cards used for product attribute callouts. Each card carries an icon (Solar 24px in brand orange) on top, a Geist 18px title, and a Geist 14px deck (`text-on-light-muted`). Surface `#E8E8EA`, 16px radius, 28px padding, hairline `border-on-light` transparent by default — hover lifts the card to white, makes the border visible, and tints the icon's container ring without changing the icon colour. Grid is `grid-template-columns: repeat(3, 1fr)` with 24px gap, collapses to a single column below `640px`. Use this when the trio reads as a flat scan of equivalent attributes; reach for the dispatch / research pattern when the items have rich body copy or trailing CTAs.
+
+#### `.is-static` modifier — suppress inherited card hover
+
+`.card-soft` carries a default hover (`background → surface-light-hover`) so it reads as inspectable. When the card is used as a **container** for interactive children (a form, a row of chips, an embedded toggle), that parent hover competes with the child's own hover affordance — the entire card darkens whenever the user reaches into it. Add the `.is-static` modifier to opt out:
+
+```css
+.card-soft.is-static:hover { background: var(--surface-light); }
+```
+
+The class is a no-op except that it overrides the inherited hover to a non-transition. Use it whenever you're nesting interactive children inside a `.card-soft` and want only those children to respond to pointer state.
 
 #### Project tile motion
 
@@ -879,6 +919,207 @@ A short horizontal shake that runs once when an invalid submit is attempted. Rei
 - On `input` event (user starts typing again): remove `.is-error` automatically.
 
 **Reduced motion:** the global `@media (prefers-reduced-motion: reduce)` rule kills the buzz animation but the red `.is-error` styling stays — error remains visually communicated, just without motion.
+
+#### Inline subscribe form composite
+
+The simplest composite use of `.input-pill` — a single email field plus a primary CTA, side by side. Used for newsletter signup, alpha-access waitlists, search-bar style entry points. Documented as a distinct pattern because the multi-field form spec below doesn't apply here (no labels, no rows, no `.on-light` scope — just one input and one button).
+
+**Anatomy:**
+- Parent `<form>` is `display: flex; flex-wrap: wrap; gap: 8px;` with `max-width: 520px` for the standard tight layout, OR full-column width under the `.subscribe-block--stretch` variant (heading above, form fills the column below).
+- `<input class="input-pill" />` carries `flex: 1 1 240px; min-width: 0` so it fills the available horizontal space and shrinks gracefully on narrow viewports without overflowing.
+- `<button class="btn-primary">` sits flush against the input, full pill radius preserved on both elements (they never share borders or visually fuse).
+- A visually hidden `.sr-only` `<label>` provides the accessible name; no visible label since the placeholder + adjacent context (heading + deck above) carry the meaning.
+
+**Microcopy.** Button text is one word, sentence case — "Subscribe", "Get access", "Notify me". Don't pluralize. The orange CTA itself is the directional cue, so trailing chevrons/arrows on the button are optional and should not be present when the sent-state pattern is wired up (the icon competes with the celebratory ink fill).
+
+**Sent state.** The sent-state pattern documented in the next section applies to inline subscribe forms too; the mechanism is identical and the copy is the only thing that changes. See "Sent-state pattern — copy variants by form context" below.
+
+### Form Controls — Multi-field Form (`.form-row`, `.input-select`, `.input-textarea`)
+
+The pill input scales up to a full enquiry / contact / signup form. Same input shape as `.input-pill`, extended with three additional primitives:
+
+**`.form-field-label`** — Geist 12px / 500 / `text-on-dark-muted` (or `text-on-light` under `.on-light`), sitting above each field with a 6px gap. Field labels are sentence-case, single line — keep them short ("Name", "Email", "Project description").
+
+**`.form-row`** — A 2-column flexible row used when two short fields naturally pair (Name + Email, Company + Role). `display: grid; grid-template-columns: 1fr 1fr; gap: 20px` above `640px`, collapses to a single column below. Place a single `.form-field` directly in the form when a field needs the full width (textarea, single-column inputs).
+
+**`.input-select`** — Pill-shaped `<select>` matching `.input-pill` dimensions exactly. The native chevron is hidden (`appearance: none`); a custom caret is painted via an inline-encoded `background-image` SVG. **Required:** the `.on-light` variant must explicitly re-declare `background-repeat: no-repeat; background-position: right 22px center; background-size: 12px 8px;` alongside the `background-color` override — using the `background:` shorthand to set only the colour silently resets the other longhand values, which makes the caret tile horizontally across the entire pill. This is the canonical bug in light-mode form variants.
+
+**`.input-textarea`** — Multi-line text field. Pills don't work above 1 line, so the textarea takes the **moderate radius** (`r-card`, 12px) instead of the full pill. Default 6 rows, vertical resize handle only, `font-family: 'Geist', sans-serif` (NOT the surrounding mono) so the placeholder and entered text match the rest of the form.
+
+**Light-mode scope — `.on-light`**
+
+The default input variants are tuned for dark sections (light text on dark surface). When a form sits on a light section inside a `.card-soft`, wrap the form container (or the form itself) in the `.on-light` class. The scope inverts contrast direction:
+
+- **Surface direction is reversed.** Default inputs sit at `rgba(255,255,255,0.55)` — visibly *lighter* than the host `.card-soft` (`#E8E8EA`), so each field reads as a raised tile, not a pressed-in dimple.
+- **Hover** lifts surface to `rgba(255,255,255,0.78)`.
+- **Focus** climbs to `rgba(255,255,255,0.96)` — near-white, unambiguous about which field is active.
+- **Placeholder colour** is `rgba(0,0,0,0.35)` (was 0.40 white on dark).
+- **Field-label and helper colours** flip to `text-on-light` and `text-on-light-subtle`.
+- **Borders** swap to `border-on-light` (default), brand-orange ring on focus, `color-error` on `.is-error`.
+
+The fill direction matters: inputs *lighter* than the card reads as a clear, inviting form. Inputs *darker* than the card reads as a disabled or pressed-in state, even when interactive. Always lift, never dim, for default form fields on light surfaces.
+
+#### Sent-state pattern — celebratory confirmation
+
+The submit button for an enquiry / contact / waitlist form gets a celebratory state when the form is successfully submitted. The pattern:
+
+1. **Inputs lock.** All form fields receive `disabled`, drop to `opacity: 0.55`, and pick up `cursor: not-allowed`. Visibly inert, but the values stay visible (no clear yet).
+2. **Submit button content swaps.** JS swaps the button's `innerHTML` to a `.sent-content` flex row holding:
+   - `<span class="sent-bold">Thanks for reaching out!</span>` — Geist 14px / 600 / `#fff`.
+   - `<span class="sent-normal">Our team will get in touch shortly.</span>` — Geist 14px / 400 / `rgba(255,255,255,0.78)`.
+   - `<span class="sent-check">` — orange checkmark SVG (16×16, 2.4px stroke, brand orange `currentColor`).
+3. **Black ink fills the pill.** A `<span class="sent-fill">` is injected as the button's first child, absolutely positioned `inset: 0` with `border-radius: inherit` and a black `#0A0A0A` background. Its `clip-path` animates `circle(0% at 50% 50%) → circle(130% at 50% 50%)` over 540ms (`cubic-bezier(0.22, 0.61, 0.36, 1)`), painting black outward from the centre over the still-orange button surface. The `.sent-content` flex row sits at `z-index: 1` above the fill, so the text reads white on orange initially, then white on black as the ink covers everything.
+4. **Orange check bounces in.** With a 620ms delay, the `.sent-check` runs a spring-y entrance via `cubic-bezier(0.34, 1.56, 0.64, 1)` and explicit overshoot keyframes (`0% scale 0.3 → 55% scale 1.2 → 78% scale 0.94 → 100% scale 1`). Total choreography lands by ~1.16s.
+5. **5s auto-reset.** `setTimeout(reset, 5000)` un-disables the fields, calls `form.reset()`, removes `.is-sent`, and restores the original button label. No manual "send another" affordance needed.
+
+**Critical opacity override.** The system's global `.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45 }` rule will mute the entire sent button to grey-brown — the black fill renders at 45% over the orange underneath. The sent state is celebratory, not disabled, so explicitly override:
+
+```css
+.btn-primary.is-sent,
+.btn-primary.is-sent[disabled],
+.btn-primary.is-sent[aria-disabled="true"] {
+  position: relative;
+  overflow: hidden;
+  opacity: 1;
+}
+```
+
+The higher-specificity selector (`.btn-primary.is-sent[disabled]` = 3 classes + 1 attribute) wins over the global `.btn[disabled]` rule. The button still ignores clicks (`pointer-events: none` + `disabled` attribute) but renders at full saturation.
+
+**Reduced motion:** `prefers-reduced-motion: reduce` skips both the clip-grow and the check-bounce animations — the end state still paints (black surface, visible check), just without the entrance choreography.
+
+##### Copy variants by form context
+
+The pattern is identical across form types; only the two-tone copy inside `.sent-content` changes:
+
+- **Enquiry / contact / sales** — `<span class="sent-bold">Thanks for reaching out!</span> <span class="sent-normal">Our team will get in touch shortly.</span>` (canonical).
+- **Newsletter / dispatch subscribe** — `<span class="sent-bold">Subscribed!</span> <span class="sent-normal">First dispatch lands soon.</span>` Drop the trailing icon on the input-pill+btn pair if it was present — the celebratory check is the new icon.
+- **Waitlist / alpha access** — `<span class="sent-bold">You're in!</span> <span class="sent-normal">We'll email when access opens.</span>`
+- **Feedback / NPS / one-tap survey** — `<span class="sent-bold">Got it.</span> <span class="sent-normal">Thanks for the signal.</span>`
+
+The orange checkmark, clip-mask fill, 5s auto-reset, and opacity override are the same in all variants. The bold clause is what happened from the user's perspective; the normal clause is what happens next. Keep both clauses short — they need to fit inside a pill button's width.
+
+The pattern also covers the **single-field subscribe form** (see "Inline subscribe form composite" above) — every input + primary-button form gets the same treatment, regardless of field count.
+
+### Modal / Dialog (`.modal-backdrop`, `.modal-card`)
+
+Used for focused tasks that benefit from disengaging the page underneath: enquiry forms, settings panels, in-context content previews. **Not** for routine confirmations (use inline state changes for those).
+
+**Structure:**
+- `.modal-backdrop` — fixed overlay covering the viewport, `background: rgba(10,10,10,0.72)` with `backdrop-filter: blur(8px)` for a soft scrim over the page. `display: none` by default; `.is-open` flips to `display: grid; place-items: center;`. Click on the backdrop (not the card) closes the modal.
+- `.modal-card` — Centred surface. Charcoal `#161616`, 20px radius (slightly larger than ambient cards — modal needs to read as a distinct surface), 1px hairline `border-on-dark`, `padding: 40px`, max-width 560px, `box-shadow: var(--shadow-overlay)` for depth.
+- `.modal-card-title` — Geist 22px / 500 / `text-on-dark`, two-tone heading optional.
+- `.modal-card-sub` — Geist 14px / `text-on-dark-muted`, single paragraph max.
+- `.modal-close-button` — **Top-right corner, plain dark-grey × glyph.** Specifically: 36×36 button, `background: #2A2A2A` (dark grey, not white or charcoal — needs to read as a discrete control against the modal's own charcoal surface), `border-radius: 9999px`, an inline SVG `<line x1="2" y1="2" x2="12" y2="12">` + `<line x1="12" y1="2" x2="2" y2="12">` cross at 14px (NOT a Solar `close-square-linear` icon — that reads as a circled-icon pill which competes with the modal's other affordances; the plain × is what works). Hover lifts to `#3A3A3A`.
+
+**Open / close behaviour:**
+- Trigger: click a `.btn` with `id="open-modal-trigger"` (or similar). JS adds `.is-open` to the backdrop, sets `aria-hidden="false"`, and locks page scroll via `document.body.style.overflow = 'hidden'`.
+- Close: backdrop click, close-button click, or `Escape` keypress. JS removes `.is-open`, sets `aria-hidden="true"`, restores body scroll, and returns focus to the trigger button.
+- The modal carries `role="dialog" aria-modal="true" aria-labelledby="<title-id>"`.
+
+**Forms inside modals.** Modal-hosted forms use the same `.input-pill` / `.input-select` / `.input-textarea` primitives as standalone forms. Stay on the dark variant (no `.on-light` scope) since the modal surface is charcoal — the default inputs read correctly against it.
+
+### Video embed (`.video-embed`)
+
+Inline iframe player in card chrome — used for product demos, walkthroughs, customer-story snippets.
+
+- Container `.video-embed` is `aspect-ratio: 16 / 9`, charcoal `#161616` surface, 16px radius, hairline `border-on-dark`, `overflow: hidden`.
+- The `<iframe>` sits absolutely positioned `inset: 0` filling the container, `border: 0`, `display: block`.
+- **No caption pill.** Keep the embed clean — surrounding section body copy or a Section-styled heading carries any explanation. Don't paint a mono-caps strap line under the player; it competes with the section's own typography hierarchy.
+
+### Playlist row (`.playlist-card`, `.playlist-thumb`)
+
+Horizontal scroll-row of video / module thumbnails. Used for course tracks, tutorial collections, recommended-next-up lists.
+
+**Anatomy of one card:**
+- `.playlist-card` — Vertical stack: thumbnail on top, metadata below. Width `260px`, gap with siblings `20px`.
+- `.playlist-thumb` — `aspect-ratio: 16 / 9`, charcoal `#161616` surface, 12px radius, `overflow: hidden`, contains an abstract token-built SVG (waveform, grid, terminal lines, etc. — no real video stills, no third-party logos).
+- `.playlist-play` — Absolutely positioned centre play badge. 48×48 circle, default `rgba(255,255,255,0.15)` + 1px `rgba(255,255,255,0.30)` border, white play-triangle glyph. On parent hover scales to `1.08×` and surface flips to brand orange.
+- `.playlist-count` — Bottom-right pill on the thumbnail. JetBrains Mono 10px / 0.2em / uppercase, `[12 VIDEOS]` style, `rgba(0,0,0,0.65)` background with backdrop-blur, `1px rgba(255,255,255,0.20)` border. Always above the hover overlay.
+- `.playlist-title` — Geist 15px / 500 / `text-on-dark`, max 2 lines via `-webkit-line-clamp`.
+- `.playlist-meta` — JetBrains Mono 10px / 0.2em / uppercase, single line of `duration · category` below the title.
+
+**Hover overlay (mandatory).** On `.playlist-card:hover`, a `.playlist-thumb::after` pseudo-element fades in over the entire thumbnail:
+
+```css
+.playlist-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms var(--ease-ui);
+  z-index: 1;
+}
+.playlist-card:hover .playlist-thumb::after { opacity: 1; }
+```
+
+The play badge (`z-index: 2`) and count pill (`z-index: 2`) paint above the overlay so they stay legible. The dimmed backdrop frames the now-orange play badge — the affordance reads instantly.
+
+### Use-case + chart composition
+
+A standardised two-column layout for product attribute callouts that pair a narrative with a small quant illustration. Two-column flex/grid:
+- **Left column (5–7/12 cols)** — kicker (mono-xs uppercase brand-orange), heading (Geist 24–28px), 1–2 paragraphs body, optional CTA pill. Stays narrative.
+- **Right column (5–7/12 cols)** — a single chart, diagram, or stat composition. Keep it bounded — one chart per use-case, no dashboards.
+- Below `900px` the right column drops below the left.
+
+Use this when a section needs to anchor a feature claim with proof, but the proof doesn't merit its own full-section chart. Reach for a full-width chart when the data IS the story.
+
+### Social testimonials ticker (`.testimonials-ticker-row`)
+
+Two horizontal marquee rows running **in opposite directions** stacked vertically with a 20px gap. Each row carries 6–12 testimonial chips (X / LinkedIn-style social posts) and loops continuously.
+
+**Row anatomy:**
+- `.testimonials-ticker-row` — `overflow: hidden`, full-bleed.
+- `.testimonials-ticker-track` — flex row of `.testimonial-chip` cards, duplicated end-to-end so the loop is seamless. Total track width 200% of viewport at minimum.
+- `.testimonial-chip` — Compact card. Charcoal `#161616` surface, 16px radius, 24px padding, fixed-width (320–360px), avatar + handle row + 3-line testimonial + posted-at footer.
+
+**Motion — WAAPI is mandatory, not CSS `animation`.** The track animation MUST be created via the Web Animations API, not a CSS `@keyframes` rule:
+
+```js
+document.querySelectorAll('.testimonials-ticker-row').forEach(row => {
+  const track = row.querySelector('.testimonials-ticker-track');
+  if (!track) return;
+  const isReverse = row.classList.contains('is-reverse');
+  const anim = track.animate(
+    [{ transform: 'translateX(0%)' }, { transform: 'translateX(-50%)' }],
+    {
+      duration: 90000,
+      iterations: Infinity,
+      easing: 'linear',
+      direction: isReverse ? 'reverse' : 'normal'
+    }
+  );
+  row.addEventListener('mouseenter', () => { anim.playbackRate = 0.18; });
+  row.addEventListener('mouseleave', () => { anim.playbackRate = 1; });
+});
+```
+
+**Why WAAPI specifically.** Hover-slowdown is essential UX — users need to be able to pause on a testimonial to read it. The intuitive CSS approach (set `animation-duration` longer via a variable on hover) **silently breaks**: when `animation-duration` changes on a running animation, the browser recomputes elapsed-progress against the new duration, which causes a position SNAP — the track visibly jumps mid-loop. WAAPI's `playbackRate` is a smooth scrubbing of speed against the current animation timing, so position never snaps. The track decelerates over a frame or two, holds the slow speed while hovered, and accelerates back to normal on leave.
+
+**Reduced motion.** When `prefers-reduced-motion: reduce` is set, skip creating the animation entirely — the track stays static and content is fully accessible by scrolling its parent.
+
+**Direction.** Convention: top row scrolls left-to-right (`direction: 'normal'`), bottom row scrolls right-to-left (`direction: 'reverse'`). The opposing motion reads as a "feed flow", not a single track.
+
+### GitHub repo card (`.repo-card`)
+
+A larger-text variant of `.card-soft` sized for GitHub-style repo attribution rows — used when displaying a list of OSS projects, integrations, or starter templates that VideoDB ships or extends.
+
+- Surface `#E8E8EA`, 16px radius, 32px padding (a notch larger than the standard `.card-soft` 24px to accommodate the bigger title size).
+- **Title** — Geist **20px** / 500 / `text-on-light` (intentionally larger than the default card title; readers should be able to scan repo names from a distance). Below the title: a 14px mono `org/repo-name` slug at `text-on-light-muted`.
+- **Body** — Geist 14px / 1.5 / `text-on-light-muted`, max 2 lines.
+- **Footer row** — Three mono badges in a horizontal row: language (with a 10px coloured dot — TS blue, Python yellow, JS yellow, Go cyan, etc.; the dot is the *only* sanctioned non-brand colour in the system because it's a quotation of GitHub's own language palette), star count with star glyph, and last-updated date.
+- Hover lifts surface to white, makes the hairline `border-on-light` visible, title flips to brand orange.
+
+### Image ticker (`.image-ticker`)
+
+Horizontal marquee variant of the basic Ticker pattern, carrying **image cards** (logos, thumbnails, product shots) instead of text. Same WAAPI motion model as the testimonials ticker — hover slows playback via `playbackRate`, never via animation-duration mutation.
+
+- `.image-ticker-track` — flex row of `.image-ticker-card`, duplicated for seamless loop.
+- `.image-ticker-card` — Fixed-width tile (200–280px), `aspect-ratio: 1 / 1` or `4 / 3`, charcoal surface, 12px radius, image content (PNG or SVG) sitting inside an inner 12px padding so the artwork never touches the card edges.
+- Single row only (don't stack two opposing image tickers — the testimonials pattern is the place for that compositional richness).
+- Use for trust-signal strips ("Trusted by", "Built on"), logo walls, or "explore the catalogue" surfaces.
 
 ### Highlighter
 
@@ -1468,6 +1709,28 @@ The hero `LIVE · v2.4.0` pill is the canonical pattern.
 
 ### Reduced motion
 Honor `@media (prefers-reduced-motion: reduce)`. Disable: word-reveal animation, typing code animation, WebGL rotation, ticker scroll, hover transforms beyond 1× (keep color shifts).
+
+### Text selection
+Two-tier `::selection` styling so the highlight color matches content rank:
+
+- **Headings and titles** — brand orange `#F24E1E` background, white `#FFFFFF` text. Applies to every `h1`–`h6`, every `.display-*` and `.heading-md` class, and anything matching `[class*="-title"]` (catches `.dispatch-card-title`, `.note-card-title`, `.build-card-title`, `.research-card-title`, `.entry-row-title`, `.project-tile-title`, `.featured-post-title`, etc — the family of card title classes).
+- **Body text and everything else** — soft grey selection that inherits text color. `rgba(0, 0, 0, 0.14)` on light surfaces; `rgba(255, 255, 255, 0.18)` on dark (gated via `.section-dark ::selection, .section-dark *::selection`).
+
+```css
+::selection { background: rgba(0, 0, 0, 0.14); color: inherit; }
+.section-dark ::selection, .section-dark *::selection {
+  background: rgba(255, 255, 255, 0.18); color: inherit;
+}
+h1::selection, h2::selection, h3::selection, h4::selection, h5::selection, h6::selection,
+h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::selection, h6 *::selection,
+[class*="-title"]::selection, [class*="-title"] *::selection,
+.display-xl::selection, .display-lg::selection, .display-md::selection, .heading-md::selection,
+.display-xl *::selection, .display-lg *::selection, .display-md *::selection, .heading-md *::selection {
+  background: var(--color-primary); color: #FFFFFF;
+}
+```
+
+The two tiers create a visual rank cue at the highlight level: selecting a heading feels deliberate (brand color asserts itself); selecting body text is quieter (a near-invisible grey). The rule is global — applies on every page, light or dark.
 
 ---
 
