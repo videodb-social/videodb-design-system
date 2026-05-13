@@ -239,10 +239,38 @@ If the browser doesn't support `showDirectoryPicker` (Safari, Firefox), the harn
 
 ## Stripping the harness for production
 
-The harness is dev/review-time only. For production deploys, strip the CSS and JS blocks via regex on the marker comments. See `scripts/build-vercel.py` in this project for a reference implementation — it uses these patterns:
+The harness is dev/review-time only. For production deploys, strip the CSS and JS blocks via regex on marker comments. See `scripts/build-vercel.py` in this project for a reference implementation — it uses these patterns:
 
-- CSS strip: regex matches the `/* ===... Review Mode (?review=1) ...` comment opener and removes everything up to (but not including) the next `</style>`.
-- JS strip: regex matches the `<script>` block containing `Review Mode — activated only via ?review=1` and removes the whole script element.
+- **CSS strip — sentinel-bounded (current).** The regex matches the `/* ===... Review Mode (?review=1) ...` comment opener and removes everything up to (and including) a matching sentinel comment of the shape `/* ===... End of Review Mode CSS ... */`. The sentinel must sit immediately after the last Review Mode CSS rule in the source.
+- **JS strip — opener-bounded.** The regex matches the `<script>` block containing the `Review Mode — activated only via ?review=1` comment and removes the whole script element.
+
+### Why the sentinel matters
+
+Earlier versions of the CSS strip terminated at `</style>` — "remove everything from the Review Mode opener up to the next `</style>` tag". This silently broke any time new component CSS was added *after* the Review Mode block but still inside the same `<style>` element. In this project, the v1.6 card additions (`.note-card`, `.build-card`, `.research-card`) and the global `::selection` rules lived after the Review Mode block; the strip was eating them along with Review Mode itself. Result: cards rendered as bare unstyled divs on production. Fixed in v1.10 by switching to an explicit sentinel.
+
+If you're adapting this harness for another project, add the sentinel comment directly after your last Review Mode CSS rule:
+
+```css
+.review-thread-thumbs-down.is-active { /* ...last review-mode rule... */ }
+
+/* ==========================================================================
+   End of Review Mode CSS — strip terminates here. Any CSS below this line
+   ships to production. New component CSS must go ABOVE this sentinel.
+   ========================================================================== */
+
+.your-component { /* ... ships to production ... */ }
+</style>
+```
+
+And write your strip regex to terminate at the sentinel, not at `</style>`:
+
+```python
+# Python — see scripts/build-vercel.py for the canonical implementation
+pattern = re.compile(
+    r"\n\s*/\* =+\s*\n\s*Review Mode \(\?review=1\)[\s\S]*?End of Review Mode CSS[\s\S]*?\*/",
+    flags=re.MULTILINE,
+)
+```
 
 After stripping, validate the output HTML still parses and contains no leftover review classes (`review-pin`, `review-panel`, `mode-toggle` are unrelated; the review-specific ones all start with `review-`).
 
