@@ -1,8 +1,8 @@
 ---
-version: "videodb-design-v1.8"
+version: "videodb-design-v1.9"
 name: "VideoDB — Agentic Website Design System"
 description: "Single source of truth for videodb.io. Editorial typography on Geist, deliberate 8px spacing, restrained motion, dual-radius shape language, and a confident dark↔light section alternation anchored by one brand orange (#F24E1E). Suited to product narratives, infrastructure storytelling, and interface-first landing experiences."
-status: "v1.8 — adds the Article Page Template, drawn from the Labs engineering blog rebuild (engineering/field-notes, how-i-built, newsletter). New top-level sections: Article hero (dark, WebGL-backed, kicker-breadcrumb pattern that consolidates the back-link into the kicker as `← Section / Category`), Article shell (2-column grid `minmax(0, 1fr) 220px` collapsing below 1024px, padding-top 40px so body hugs the hero), and Article TOC (sticky right-rail, 1px grey hairline as parent border, links pulled flush with `margin-left: -24px` so the 2px brand-orange `.is-active` border overlaps the hairline exactly, `translateX(4px)` active nudge, 280ms cubic-bezier(0.2, 0.7, 0.2, 1) easing, scroll-position-based active detection with bottom-of-document fallback). Also documents the markdown-embedded structural blocks the Labs content carries: `.decision-list` (no-surface three-column hairline-row tier table with CSS-counter ranks), `.measurement-card` (REMAPPED to the canonical `.callout` shape after the original charcoal-surface version produced dark-on-dark labels — class name says number-callout but actual content is labeled-checklist, so use the existing callout vocabulary), `.article-diagram` / `.diagram-step` / `.diagram-arrow` (horizontal flow on charcoal), and `.split-cases` + `.case-card.success/.danger`. New Code Blocks variant: `pre:has(> code.language-text)` renders narrative request-flow traces with the lighter 'code response' treatment (soft-light surface + brand-orange left rail) instead of the charcoal terminal — language-python/js/bash keeps the terminal default. New Pull-quote vertical-centering rule: blockquotes use `display: flex; flex-direction: column; justify-content: center` with `min-height: 64px` and zero the trailing margin on the last child to avoid bottom-heavy spacing. Anchor scrolling: every in-article-body h2/h3 carries `scroll-margin-top: 96px` to clear the sticky site-header. Token bump: `mono-xs` floor lifts from 10px → 11px (no microcopy below 11px sitewide); component descriptions that previously called out 10px for `mono-xs` get the sweep. New anti-pattern documented under Don't: inline `style={{color: 'inherit'}}` on a `<Link>` overrides CSS `:hover` rules via inline-style specificity — use a `className` so the cascade governs both states. Reduced-motion section extended to call out the TOC's translate-X and transition resets. Future changes require a version bump."
+status: "v1.9 — adds the cross-cutting patterns surfaced in the cross-page review round on Labs. **Article ending nav** (`.article-ending-nav`): universal hairline-divider + 'Back to <Parent>' CTA at the foot of every article-template page (field-notes, how-i-built, newsletter, and any future article shape). Brand-orange arrow translates left 4px on hover, label flips to brand orange. **Kicker category-collision rule**: when the article's frontmatter `category` mirrors the back-link section name (`category: 'How I Built'` on a `/engineering/how-i-built/...` page), the trailing `/ Category` portion is dropped from the kicker entirely — `← How I Built` only, no redundant suffix. **Hub eyebrow redundancy rule**: when a hub page has a `← Back to <Parent>` CTA above its h1, the prior `hub-hero-eyebrow` paragraph is dropped — it was repeating navigation context the back-link already carried. Top-level hubs (no parent) use just the h1 + deck. **Install snippet with copy button** (`.project-install-snippet` + `<InstallSnippet>` client component): canonical pattern for any copyable terminal command — mono code on charcoal, copy button on the right with 1.8s confirmation flash, brand-orange when copied. **Project tile chip-hover rule**: when tag chips describe the *what* of an entity (project tile capabilities), they stay still on parent hover — the parent card carries the affordance, not the chips. Chips inside generic `.card-charcoal` keep their inherited lift behavior (so `.card-charcoal` is the explicit opt-in for chip-on-hover-lifts). **Walkback from v1.8**: the `pre:has(> code.language-text)` 'code response' variant was removed — every code fence (including ```text) now renders with the charcoal terminal default. The narrative-vs-real-code distinction is carried by the prose, not by surface chrome. **11px floor enforcement**: 27 inline `font-size: 10px` references across `globals.css` (+ 10 inside the review-mode harness CSS) were swept to 11px to match the v1.8 `mono-xs` token bump. **Don't** rule added: don't repeat navigational context in two adjacent UI elements (back-link + eyebrow saying the same thing) — pick the affordance, drop the label. Future changes require a version bump."
 supersedes:
   - "uploads/NEO-videodb-design.md (v1.1)"
   - "references/neu-videodb-DESIGN.md (Nexus / Vision & Logic ancestor)"
@@ -695,6 +695,32 @@ Each project tile carries a different hover-triggered animation so the four tile
 - No gradients. Solid fills only. Brand orange + white opacities.
 - Each tile's motion should be **distinct** — don't reuse the same animation across tiles. The mechanic should connect to the project's metaphor (waveform = audio, rings = bloom, code lines = pair programming, streams = flowing data).
 - Use `transform-box: fill-box; transform-origin: center;` on SVG children that need to scale or rotate around their own center.
+
+#### Project tile chip-hover rule (v1.9)
+
+When tag chips inside a `.project-tile` describe **what the project is** (capabilities, tech stack), they stay still on parent hover — no color shift, no surface brighten. The card carries the affordance; the chips are content. The earlier behavior that brightened chips when the parent tile was hovered was removed because it conflated "the card is hoverable" with "the chip is hoverable."
+
+The general `.card-charcoal:hover .tag-chip-dark` rule is unaffected — it remains in place for charcoal cards that are themselves hoverable surfaces where chips are chrome. So the explicit opt-in for "chips lift with parent" is `.card-charcoal`; `.project-tile` opts out.
+
+This is the rule: **chips that describe the entity stay still; chips that are chrome on a hoverable surface lift with it.** If you're unsure, default to "stay still" — the lift is a special case.
+
+### Install snippet (`.project-install-snippet` + `<InstallSnippet>`) — v1.9
+
+The canonical pattern for any copyable terminal command on a content surface — install scripts on project detail pages, getting-started commands, anywhere a user might want to run a one-line shell command. Replaces bare `<pre>` blocks where a copy affordance matters.
+
+**Anatomy:**
+
+- Wrapper: charcoal surface, hairline border, 12px radius. `position: relative` + `padding-right: 92px` so the copy button has room without overlapping the code.
+- Code element: mono 13px / line-height 1.5 / `--text-on-dark`. `flex: 1`. `white-space: pre-wrap; word-break: break-word` so long commands wrap rather than horizontal-scroll on narrow viewports.
+- Copy button: `position: absolute; right: 12px; top: 50%; transform: translateY(-50%)`. Mono 11px caps pill (matches the design system filter pill vocabulary). Hover lifts to `rgba(255, 255, 255, 0.10)` background + white text. **When `aria-label="Copied"`** (post-click state): label flips to brand orange + brand-orange-tinted border + check icon.
+
+**Behavior:**
+
+- Click → `navigator.clipboard.writeText(command)` → button state flips to ✓ Copied for **1.8 seconds**, then auto-returns to Copy. The `aria-live="polite"` attribute on the button means screen readers get the confirmation announcement without an interaction blocker.
+- If clipboard write fails (permission denied / API unavailable / non-HTTPS context), the button stays silent rather than flashing an error — the command is still selectable for manual copy.
+- Implementation is a client component (`'use client'`), but the wrapper markup degrades fine without JS — the code is still visible and selectable, just no copy button affordance.
+
+Use this for every copyable command site-wide. **Don't** invent a parallel `.copy-snippet` / `.command-block` / `.install-line` — there's one canonical install-snippet shape.
 
 ### Code Blocks
 
@@ -1483,6 +1509,50 @@ Inside `.article-body`:
 
 **Anchor scrolling rule (universal):** every h2/h3 inside `.article-body` carries `scroll-margin-top: 96px`. The site-header is sticky (~50px tall); without this rule, clicking a TOC entry lands the heading flush at the top of the viewport, hidden under the header. 96px = header height + ~46px reading buffer. The existing `section[id] { scroll-margin-top: 72px }` rule from § Layout does NOT cover this case because the TOC anchors target headings inside the body, not top-level sections.
 
+### Kicker category-collision rule (v1.9)
+
+When the article's frontmatter `category` mirrors the back-link section name (`category: 'How I Built'` on a `/engineering/how-i-built/...` page), drop the trailing `/ Category` from the kicker entirely. Result: `← How I Built` only — no `← How I Built / How I Built` duplication. The kicker pattern is `← Section [/ Category-if-different]` — the category half is a context-adder, not a label, so it only earns its slot when it adds information the back-link doesn't already carry.
+
+Implementation pattern in the template:
+
+```tsx
+<p className="article-hero-kicker">
+  <Link href="/engineering/how-i-built" className="article-hero-back-link">
+    ← How I Built
+  </Link>
+  {post.category && post.category.toLowerCase() !== 'how i built' && (
+    <>{' / '}{post.category}</>
+  )}
+</p>
+```
+
+Same guard applies to every article section: `/engineering/field-notes` checks against `'field notes'`, `/engineering/newsletter` checks against `'newsletter'` (and additionally drops the issue # + date because the byline below already declares both — see § Article hero).
+
+### Article ending nav (`.article-ending-nav`) — v1.9
+
+Every article-template page closes with a back-to-parent CTA. Sits between the article body and the SubscribeBlock (or directly before the footer when no subscribe fold is present). Universal pattern — no article-shape exempt.
+
+```jsx
+<ArticleEndingNav href="/engineering/field-notes" label="Back to Field Notes" />
+```
+
+**Anatomy:**
+
+- Wrapper: `margin: 72px 0 0; padding-top: 32px; border-top: 1px solid var(--border-on-light)`. The hairline separates the prose from the nav row — strong visual full-stop after the article body.
+- Link: `<Link>` (Next.js client routing, not `<a>`). Geist 17px / 500 / dark ink. `display: inline-flex; align-items: center; gap: 12px`. Sits at the natural left edge of the body column, not centered — alignment matches the prose above.
+- Arrow glyph: a separate `<span class="article-ending-nav-arrow">←</span>`, Geist 22px / brand orange. Translates `-4px` on parent hover (the arrow slides left to telegraph "you're going back"). Reduced-motion suppresses the translate.
+- Label hover: text color flips to brand orange. Standard 180ms ease.
+
+**When to use a different ending nav.** Don't — the same back-to-parent CTA carries every article shape. The label text varies (`Back to Field Notes` / `Back to How I Built` / `Back to Newsletter`) but the visual treatment is identical so the article-template page boundary reads consistently across all three sections.
+
+### Hub eyebrow redundancy rule (v1.9)
+
+Earlier hub heroes carried two navigation cues stacked: a `← Back to Engineering` link AND a `<p class="hub-hero-eyebrow">Notes · Engineering / Field Notes</p>` line below it. The eyebrow was repeating what the back-link already said. **Rule: when a back-link CTA exists above the h1, drop the eyebrow.** The back-link carries the parent navigation; the h1 carries the page name; together they communicate the same info as the old eyebrow without saying it twice.
+
+For top-level hubs that have no parent to link back to (e.g., the `/engineering` index, `/research`, `/projects`), the eyebrow goes too — just the h1 + deck. The page is already the top of its section; there's nothing the eyebrow can add.
+
+This is a specific case of the universal **no-repeating-navigation-context** principle (see § Don't).
+
 ## Article TOC (right-rail navigation)
 
 The sticky right rail that lives inside `.article-shell-inner`. Lists every `h2` (and optionally `h3`) in the article body as a vertical link list. Reads as "In this note" / "In this build" / "In this article" depending on context. Single component on Labs: `app/article-toc.tsx`.
@@ -1593,26 +1663,7 @@ Horizontal step flow on a charcoal surface — used for request paths, data pipe
 
 ## Section continuation: extension to existing Components → Code Blocks
 
-### Code-text variant (narrative request-flow / response samples)
-
-In § Code Blocks (around line 699 of the spec) add a sub-section after the existing charcoal code-block treatment:
-
-> **`text`-language fences are not code.** Markdown fences of the form ```` ```text ``` ```` typically carry narrative request-flow traces, plain-text response samples, or pseudo-code step lists — content that benefits from monospace structure but doesn't earn the full "terminal window" treatment. Render those with a lighter "code response" shape:
->
-> ```css
-> .article-body pre:has(> code.language-text) {
->   background: var(--surface-light);
->   border: 1px solid var(--border-on-light);
->   border-left: 3px solid var(--color-primary);
->   border-radius: 0 var(--r-card) var(--r-card) 0;
->   color: var(--text-on-light);
->   font-size: 13px;
->   line-height: 1.7;
->   padding: 16px 22px;
-> }
-> ```
->
-> Charcoal terminal stays the default for `language-python` / `language-js` / `language-bash` / etc. Only `language-text` flips to the soft-light "code response" variant. The brand-orange `border-left: 3px` ties this block visually to the pull-quote (same left-rail accent on the same soft surface) — they're both "structured-but-not-data" inserts. Modern browsers support `:has()` (Chrome/Edge/Safari Aug 2022, Firefox Dec 2023).
+> **Walkback (v1.9):** the `language-text` "code response" variant introduced in v1.8 (soft-light surface + brand-orange left rail) was removed on review. Every code fence — `language-python`, `language-js`, `language-bash`, `language-text`, anything — now uses the single charcoal terminal default. The narrative-vs-real-code distinction is carried by the prose around the block, not by surface chrome. Rule: **one code-block shape sitewide**, no per-language surface variants.
 
 ## Section continuation: extension to existing Components → Cards
 
@@ -2004,6 +2055,7 @@ The two tiers create a visual rank cue at the highlight level: selecting a headi
 - Don't use `outline: none` without a replacement focus indicator.
 - **Don't set `color` via inline `style` on an element that needs a CSS `:hover` rule** (or any pseudo-class state). Inline styles win against CSS pseudo-class selectors on specificity, so `:hover` silently never fires. The bug pattern is `<Link style={{ color: "inherit", textDecoration: "none" }}>` — it looks defensive but actually locks the link to its inherited color and disables every CSS-managed state. Use a `className` and let the cascade govern both resting and hover. This rule applies universally: any state CSS would normally manage (`:hover`, `:focus`, `.is-active`, `prefers-reduced-motion`) is undermined by an inline override.
 - **Don't add a markdown-embedded component class without checking whether the design system already has a pattern that fits.** The original `.measurement-card` was styled as a custom 36px-orange-number callout on charcoal; the actual markdown content was a labeled `<ul>`, which the existing `.callout` shape already covers. Result: invisible dark-on-dark text, plus parallel CSS for what should have been one component. Before adding a new class, grep the design system for an existing pattern.
+- **Don't repeat navigational context in two adjacent UI elements.** A `← Back to Engineering` link followed immediately by a `Notes · Engineering / Field Notes` eyebrow is saying the same thing twice — the user has to read both before realizing they're identical. Pick the affordance (the back-link is the better choice — it both labels AND navigates) and drop the label. Same anti-pattern: hub heroes that stack a `←` link AND an eyebrow saying the same parent name; article kickers that show `← How I Built / How I Built` (back-link + category-suffix where category mirrors section name); newsletter kickers that put `issue #001 · May 8, 2026` in the kicker AND the byline below. The principle: every piece of UI chrome should add information the next piece doesn't already carry.
 
 ---
 

@@ -4847,16 +4847,52 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
         </div>
       </div>
 
-      <!-- v1.8: code-text variant — narrative request-flow / response samples -->
+      <!-- v1.9: install snippet with copy button — canonical pattern for copyable commands -->
       <div class="section-heading" style="margin-top: 96px;">
-        <h3 class="heading-md" style="font-size: 26px;">Two code shapes for two kinds of content</h3>
-        <p class="lead">v1.8 — markdown <code>```text</code> fences are for narrative request-flow traces, not actual code. Render them with a lighter "code response" treatment: soft-light surface + brand-orange left rail. Real code (python / js / bash) keeps the charcoal terminal default. Selector: <code>pre:has(&gt; code.language-text)</code>.</p>
+        <h3 class="heading-md" style="font-size: 26px;">Install snippet — mono command + copy</h3>
+        <p class="lead">v1.9 — the canonical pattern for any copyable terminal command. Mono code on the left, copy pill on the right with a 1.8s confirmation flash. Use this anywhere a user might want to grab a one-line shell command (install scripts, getting-started, CLI invocations). Don't invent parallel <code>.copy-snippet</code> or <code>.command-block</code> shapes — one canonical install-snippet sitewide.</p>
       </div>
 
-      <div class="cards-grid cards-grid-2" style="margin-bottom: 24px;">
-        <div>
-          <div class="demo-label">Charcoal terminal — for actual code (language-python / language-js / language-bash)</div>
-          <pre style="background: var(--charcoal); border: 1px solid var(--border-on-dark); border-radius: var(--r-surface-md); color: var(--text-on-dark); font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.75; padding: 24px; overflow-x: auto; margin: 0;"><code>from flask import Flask
+      <div style="margin-bottom: 24px;">
+        <div class="demo-label">Install snippet — click Copy to flash the brand-orange confirmation state</div>
+        <div class="showcase-install-snippet" style="position: relative; background: var(--neutral-dark); border: 1px solid var(--border-on-dark); border-radius: 12px; padding-right: 92px; display: flex; align-items: center; min-height: 56px;">
+          <pre style="margin: 0; padding: 16px 22px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; color: var(--text-on-dark); overflow-x: auto; white-space: pre-wrap; word-break: break-word; flex: 1;"><code>curl -fsSL https://artifacts.videodb.io/call.md/install | bash</code></pre>
+          <button type="button" class="showcase-copy-btn" data-copy-target="prev" style="position: absolute; top: 50%; right: 12px; transform: translateY(-50%); display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-on-dark); border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.78); cursor: pointer;">
+            <iconify-icon icon="solar:copy-linear" width="14" height="14" aria-hidden="true"></iconify-icon><span>Copy</span>
+          </button>
+        </div>
+        <script>
+          (function () {
+            document.querySelectorAll('.showcase-copy-btn').forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                var wrap = btn.closest('.showcase-install-snippet');
+                var code = wrap && wrap.querySelector('code');
+                if (!code || !navigator.clipboard) return;
+                navigator.clipboard.writeText(code.textContent || '').then(function () {
+                  btn.innerHTML = '<iconify-icon icon="solar:check-circle-linear" width="14" height="14" aria-hidden="true"></iconify-icon><span>Copied</span>';
+                  btn.style.color = '#F24E1E';
+                  btn.style.borderColor = 'rgba(242, 78, 30, 0.30)';
+                  setTimeout(function () {
+                    btn.innerHTML = '<iconify-icon icon="solar:copy-linear" width="14" height="14" aria-hidden="true"></iconify-icon><span>Copy</span>';
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                  }, 1800);
+                });
+              });
+            });
+          })();
+        </script>
+      </div>
+
+      <!-- v1.9: code blocks — one shape sitewide (walkback from v1.8 language-text split) -->
+      <div class="section-heading" style="margin-top: 64px;">
+        <h3 class="heading-md" style="font-size: 26px;">One code-block shape sitewide</h3>
+        <p class="lead">v1.9 walkback — the soft-light <code>language-text</code> variant introduced in v1.8 was removed on review. Every code fence — Python, JS, bash, text — uses the single charcoal terminal default. The narrative-vs-real-code distinction is carried by the prose around the block, not by surface chrome. No per-language surface variants.</p>
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <div class="demo-label">Charcoal terminal — universal default for every code fence</div>
+        <pre style="background: var(--charcoal); border: 1px solid var(--border-on-dark); border-radius: var(--r-surface-md); color: var(--text-on-dark); font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.75; padding: 24px; overflow-x: auto; margin: 0;"><code>from flask import Flask
 from flask_compress import Compress
 
 app = Flask(__name__)
@@ -4865,15 +4901,6 @@ Compress(app)
 @app.get("/api/results")
 def results():
     return {"items": build_large_json()}</code></pre>
-        </div>
-        <div>
-          <div class="demo-label">Code response — for language-text request-flow narratives</div>
-          <pre style="background: var(--surface-light); border: 1px solid var(--border-on-light); border-left: 3px solid var(--color-primary); border-radius: 0 12px 12px 0; color: var(--text-on-light); font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; padding: 16px 22px; overflow-x: auto; margin: 0;"><code class="language-text">Client:      Accept-Encoding: gzip, deflate, br
-App:         returns raw JSON unless app-level compression
-Lambda:      enforces raw response payload limit
-API Gateway: compresses only after Lambda returns
-Client:      receives compressed bytes, decompresses</code></pre>
-        </div>
       </div>
     </div>
   </div>
@@ -5379,6 +5406,31 @@ Client:      receives compressed bytes, decompresses</code></pre>
           </div>
         </div>
       </div>
+
+      <!-- v1.9: Article ending nav — universal back-to-parent CTA at the foot of every article -->
+      <div class="section-heading" style="margin-top: 64px;">
+        <h3 class="heading-md" style="font-size: 26px;">Article ending nav</h3>
+        <p class="lead">v1.9 — every article-template page closes with a back-to-parent CTA. Hairline divider above (full visual stop after the body), then a single Geist 17px back-link with a brand-orange arrow that translates left 4px on hover. Label flips to brand orange. Same shape across field-notes / how-i-built / newsletter — only the label text changes.</p>
+      </div>
+
+      <div class="card-soft" style="padding: 56px 48px 40px; background: #FFFFFF; margin-bottom: 24px;">
+        <p style="color: rgba(0,0,0,0.45); font-style: italic; margin: 0 0 24px;">…the rest of the article body would precede this nav.</p>
+        <nav style="margin: 72px 0 0; padding-top: 32px; border-top: 1px solid var(--border-on-light);" aria-label="Back to parent">
+          <a href="#" class="showcase-article-ending-link" style="display: inline-flex; align-items: center; gap: 12px; font-family: 'Geist', sans-serif; font-size: 17px; font-weight: 500; letter-spacing: -0.01em; color: var(--text-on-light); text-decoration: none; transition: color 180ms ease;">
+            <span class="showcase-article-ending-arrow" style="display: inline-block; font-family: 'Geist', sans-serif; font-size: 22px; line-height: 1; color: var(--color-primary); transition: transform 180ms ease;" aria-hidden="true">←</span>
+            <span>Back to Field Notes</span>
+          </a>
+        </nav>
+      </div>
+      <style>
+        .showcase-article-ending-link:hover { color: var(--color-primary); }
+        .showcase-article-ending-link:hover .showcase-article-ending-arrow { transform: translateX(-4px); }
+        @media (prefers-reduced-motion: reduce) {
+          .showcase-article-ending-link,
+          .showcase-article-ending-arrow { transition: none; }
+          .showcase-article-ending-link:hover .showcase-article-ending-arrow { transform: none; }
+        }
+      </style>
     </div>
   </div>
 </section>
@@ -8732,10 +8784,16 @@ document.querySelectorAll('.compare-cell').forEach(cell => {
       } else {
         const id = 'c-' + String(state.nextId).padStart(3, '0');
         state.nextId++;
+        // v4: stamp page_url + page_title on each comment at pin-drop time so
+        // cross-page review sessions don't lose attribution. The top-level
+        // bundle page_url stays (it records where Submit was clicked), but
+        // per-comment URLs are what the AI uses to route changes.
         state.comments.push({
           id: id,
           status: 'open',
           target: data.target,
+          page_url: location.href.replace(/[?&]review=1\b/, '').replace(/\?$/, ''),
+          page_title: document.title,
           comment: text,
           attachments: attachments,
           links: links,

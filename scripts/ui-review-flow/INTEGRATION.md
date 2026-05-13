@@ -120,6 +120,8 @@ Six further upgrades layered on v3:
 
 6. **autoTag expansions for the Article Page Template.** Tags `.article-hero`, `.article-hero-kicker`, `.article-hero-deck`, `.article-toc`, `.article-toc-label`, `.article-shell-inner`, plus markdown-embedded blocks: `.article-diagram`, `.diagram-step`, `.split-cases`, `.case-card.success/.danger`, `.measurement-card`, `.decision-list`, `.callout`. Lets the user pin directly on a diagram step or case card instead of always landing on the article-body wrapper.
 
+7. **Per-comment `page_url` + `page_title`.** Previously the bundle captured `page_url` only once at submit time (the page the user was on when they clicked "Submit feedback"). For cross-page review sessions that lost the per-pin page attribution — Claude couldn't tell which page each comment belonged to. v4 stamps `page_url` and `page_title` on each comment at the moment the pin is dropped. The `?review=1` flag is stripped from the recorded URL so paths read cleanly. The top-level bundle `page_url` stays (a useful sanity record of where Submit was clicked).
+
 The bundle version field is still `3` — v4 changes are interaction + persistence, not schema. The pin-mode pref lives in its own localStorage key (`videodb-review-pin-mode`), not in the comments bundle.
 
 ## Feedback bundle schema (what gets exported)

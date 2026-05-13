@@ -143,7 +143,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .review-reply-head {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -249,14 +249,14 @@ body.review-sidebar-open .review-toolbar {
   border-radius: 999px;
   margin-right: 10px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
 }
 .review-section-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -435,7 +435,7 @@ body.review-sidebar-open .review-toolbar {
 .review-comment-card.is-orphaned { border-color: rgba(255,122,77,0.4); }
 .review-comment-card .num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--color-primary);
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -443,7 +443,7 @@ body.review-sidebar-open .review-toolbar {
 .review-comment-card.is-resolved .num { color: rgba(255,255,255,0.5); }
 .review-comment-card .target {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   color: rgba(255,255,255,0.5);
   margin-top: 4px;
   letter-spacing: 0.1em;
@@ -489,7 +489,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .review-save-status .target-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.45);
@@ -510,7 +510,7 @@ body.review-sidebar-open .review-toolbar {
   border: 1px solid var(--border-on-dark);
   color: #fff;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 6px 10px;
@@ -567,7 +567,7 @@ body.review-sidebar-open .review-toolbar {
 @media (max-width: 640px) {
   .review-panel,
   .review-sidebar { width: 100vw; right: 0; }
-  .review-toolbar { top: 70px; right: 12px; padding: 8px 12px; font-size: 10px; }
+  .review-toolbar { top: 70px; right: 12px; padding: 8px 12px; font-size: 11px; }
   .review-fab { bottom: 16px; right: 16px; }
 }
 
@@ -660,7 +660,7 @@ body.review-sidebar-open .review-toolbar {
   justify-content: space-between;
   gap: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -720,7 +720,7 @@ body.review-sidebar-open .review-toolbar {
 .review-extra-targets {
   padding: 6px 14px 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);

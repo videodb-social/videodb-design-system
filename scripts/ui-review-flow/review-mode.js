@@ -1396,10 +1396,16 @@
       } else {
         const id = 'c-' + String(state.nextId).padStart(3, '0');
         state.nextId++;
+        // v4: stamp page_url + page_title on each comment at pin-drop time so
+        // cross-page review sessions don't lose attribution. The top-level
+        // bundle page_url stays (it records where Submit was clicked), but
+        // per-comment URLs are what the AI uses to route changes.
         state.comments.push({
           id: id,
           status: 'open',
           target: data.target,
+          page_url: location.href.replace(/[?&]review=1\b/, '').replace(/\?$/, ''),
+          page_title: document.title,
           comment: text,
           attachments: attachments,
           links: links,
