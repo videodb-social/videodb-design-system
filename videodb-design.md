@@ -1,8 +1,8 @@
 ---
-version: "videodb-design-v1.9"
+version: "videodb-design-v1.10"
 name: "VideoDB — Agentic Website Design System"
 description: "Single source of truth for videodb.io. Editorial typography on Geist, deliberate 8px spacing, restrained motion, dual-radius shape language, and a confident dark↔light section alternation anchored by one brand orange (#F24E1E). Suited to product narratives, infrastructure storytelling, and interface-first landing experiences."
-status: "v1.9 — adds the cross-cutting patterns surfaced in the cross-page review round on Labs. **Article ending nav** (`.article-ending-nav`): universal hairline-divider + 'Back to <Parent>' CTA at the foot of every article-template page (field-notes, how-i-built, newsletter, and any future article shape). Brand-orange arrow translates left 4px on hover, label flips to brand orange. **Kicker category-collision rule**: when the article's frontmatter `category` mirrors the back-link section name (`category: 'How I Built'` on a `/engineering/how-i-built/...` page), the trailing `/ Category` portion is dropped from the kicker entirely — `← How I Built` only, no redundant suffix. **Hub eyebrow redundancy rule**: when a hub page has a `← Back to <Parent>` CTA above its h1, the prior `hub-hero-eyebrow` paragraph is dropped — it was repeating navigation context the back-link already carried. Top-level hubs (no parent) use just the h1 + deck. **Install snippet with copy button** (`.project-install-snippet` + `<InstallSnippet>` client component): canonical pattern for any copyable terminal command — mono code on charcoal, copy button on the right with 1.8s confirmation flash, brand-orange when copied. **Project tile chip-hover rule**: when tag chips describe the *what* of an entity (project tile capabilities), they stay still on parent hover — the parent card carries the affordance, not the chips. Chips inside generic `.card-charcoal` keep their inherited lift behavior (so `.card-charcoal` is the explicit opt-in for chip-on-hover-lifts). **Walkback from v1.8**: the `pre:has(> code.language-text)` 'code response' variant was removed — every code fence (including ```text) now renders with the charcoal terminal default. The narrative-vs-real-code distinction is carried by the prose, not by surface chrome. **11px floor enforcement**: 27 inline `font-size: 10px` references across `globals.css` (+ 10 inside the review-mode harness CSS) were swept to 11px to match the v1.8 `mono-xs` token bump. **Don't** rule added: don't repeat navigational context in two adjacent UI elements (back-link + eyebrow saying the same thing) — pick the affordance, drop the label. Future changes require a version bump."
+status: "v1.10 — sweep round following the v1.9 cross-page audit. Heading-md locked at 32px with a new `.subsection-heading` class (22–26px) for in-section subheadings, retiring eleven inline `style=\"font-size: …px;\"` overrides. New `.section-heading.is-stacked` modifier for subsection openers where the small heading + multi-line lead read awkwardly inside the default 8fr/4fr grid; Article shell primitives and Article ending nav subsections adopt it, and the Article shell demo reorganizes so the TOC sits above the article hero (which now spans full width). `.frame` carries inner-frame padding via its own CSS rule (replaces inline `padding: 0 24px;` on 14 sections; col-offset's redundant internal padding removed in the same pass; full-bleed tickers opt out explicitly). Build script's review-mode strip is now sentinel-bounded — fixes the silent loss of post-Review-Mode component CSS in production. `.article-hero-back-link` class promoted from an inline `onmouseover` hack to a real CSS rule. New `scripts/lint-font-sizes.py` enforces the 11px floor sitewide. Showcase-only chrome (`.demo-label` / `.demo-row` / `.cards-grid*`) documented as not-for-production. Showcase font-size sweep: 33 sub-11px declarations bumped to match the v1.8 `mono-xs` floor. See § Changelog for the full diff history."
 supersedes:
   - "uploads/NEO-videodb-design.md (v1.1)"
   - "references/neu-videodb-DESIGN.md (Nexus / Vision & Logic ancestor)"
@@ -239,6 +239,36 @@ components:
     triggerGlyph: "+ rotates 45° and tints to {colors.primary} on hover"
     hoverBridge: "::after pseudo-element extends 16px below the trigger as transparent zone with pointer-events: auto during hover"
     typographyReset: "Geist with text-transform: none and letter-spacing: 0 — dropdown content is real prose, not chrome"
+---
+
+## Contents
+
+- [Overview](#overview)
+- [Brand & Voice](#brand--voice)
+- [Logo & Wordmark](#logo--wordmark)
+- [Color](#color)
+- [Typography](#typography)
+- [Layout](#layout)
+- [Section Heading Pattern (light sections)](#section-heading-pattern-light-sections)
+- [Section Modes (Dark ↔ Light)](#section-modes-dark--light)
+- [Shapes](#shapes)
+- [Elevation & Depth](#elevation--depth)
+- [Components](#components) — Buttons, Pill tabs, Anchor pill, Tag chip, Byline, Binary toggle, Cards (soft / charcoal / numbered / lifecycle / entry row / project tile / dispatch / research / note / build / feature / repo), Code Blocks, Diagram Card, Mono Badges, Header, Footer, Navigation Mega-menus, Stats, Ticker, Loaders, Slider, Form Controls (pill input / multi-field / sent state), Modal, Video embed, Playlist row, Use-case + chart, Social testimonials ticker, Image ticker, Install snippet, Highlighter, Iconography
+- [Interactive Patterns](#interactive-patterns) — masked word reveal, typing code block, live chips, pricing, lifecycle, comparison, problem/solution
+- [Hero variants](#hero-variants) — primary, centered, punchline orange
+- [Article Page Template](#article-page-template) — hero, kicker breadcrumb, shell, body, ending nav, hub eyebrow rule
+- [Article TOC (right-rail navigation)](#article-toc-right-rail-navigation)
+- [Article body — embedded structural blocks](#article-body--embedded-structural-blocks)
+- [Section continuation: Code Blocks](#section-continuation-extension-to-existing-components--code-blocks)
+- [Section continuation: Cards](#section-continuation-extension-to-existing-components--cards)
+- [Motion](#motion)
+- [Accessibility (Non-negotiable)](#accessibility-non-negotiable)
+- [Do's and Don'ts](#dos-and-donts)
+- [Guardrails (Non-negotiable structural DNA)](#guardrails-non-negotiable-structural-dna)
+- [Implementation Notes](#implementation-notes) — asset locations, fonts, stack, anchor scrolling, build-time strip, font-size lint
+- [Showcase-only chrome (not for production)](#showcase-only-chrome-not-for-production)
+- [Changelog](#changelog)
+
 ---
 
 ## Overview
@@ -486,25 +516,32 @@ This offset is what makes the system feel editorial rather than dashboard-like. 
 
 A separate, finer-grained rule from the 2/10 column offset above — and one that's easy to miss until content sits flush against the vertical hairline borders and looks "jammed".
 
-The `.frame` element (the 1400px max-width container with `border-left` / `border-right` hairlines) **must carry `padding: 0 24px` on every section**. The padding is what creates breathing room between the hairlines and any content inside the frame. Without it, section-codes, headings, cards, and grids butt directly against the 1px vertical borders.
+The `.frame` element (the 1400px max-width container with `border-left` / `border-right` hairlines) **carries `padding: 0 24px` by default** (set on the `.frame` CSS rule itself, as of v1.10). The padding is what creates breathing room between the hairlines and any content inside the frame. Without it, section-codes, headings, cards, and grids butt directly against the 1px vertical borders.
 
 ```html
 <section class="section section-dark">
-  <!-- inline padding on .frame is the mandatory bit -->
-  <div class="frame" style="padding: 0 24px;">
+  <!-- padding is automatic — .frame's CSS rule provides 24px horizontal padding -->
+  <div class="frame">
     <div class="section-heading-wrap" style="display: grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">31 /<br>Labs Cards</div>
       <div class="section-heading">…</div>
     </div>
-
-    <!-- additional demo content as siblings of .section-heading-wrap,
-         still inside .frame and inheriting its inline padding -->
     <div class="note-card-list">…</div>
   </div>
 </section>
 ```
 
-**Why inline rather than a default CSS rule on `.frame`.** Every existing section in the showcase carries the inline `style="padding: 0 24px;"`. Moving it to the `.frame` rule itself would double-pad those existing sections. Until a coordinated refactor of the showcase happens, inline is the pattern — copy it onto every new section. If you're seeing content flush against the hairlines, this is the rule that's missing.
+**Full-bleed opt-out.** A small number of sections want their content to flow edge-to-edge with the frame hairlines — horizontal ticker marquees, image strips, the footer's own internal padding system. Those override with an inline `style="padding: 0;"` on the `.frame` element itself:
+
+```html
+<section class="section section-dark" style="padding: 0;">
+  <div class="frame" style="padding: 0;">
+    <div class="ticker">…</div>
+  </div>
+</section>
+```
+
+**Why this changed in v1.10.** Earlier rounds had every section carry inline `style="padding: 0 24px;"` because adding the padding to the `.frame` rule would double-pad sections that also used `.col-offset` (whose `.left-col` / `.right-col` had their own `padding-left` / `padding-right`). In v1.10 the columns' internal padding was removed in the same pass — the frame's outer padding now provides the breathing room from the hairlines, and the col-offset grid sits flush inside that padded area. Net visual change: zero. Net inline-style noise: 14 declarations retired.
 
 Light sections without the offset OR the hairline padding read as flat and unstructured; dark sections without them lose the breathing room around hairlines and read as if the content is jammed against the frame edges.
 
@@ -526,6 +563,61 @@ Every light section opens with the same three-element rhythm:
 3. **Supporting body copy** — col 9–12 of an 8/4 split, aligned to the bottom of the heading via `self-end`. Body opacity at 75%.
 
 Below this header, content blocks (cards, code, lists) sit with 64–96px of breathing room.
+
+### Stacked variant (`.section-heading.is-stacked`) — v1.10
+
+The default `.section-heading` is an 8fr / 4fr side-by-side grid at md+: heading on the left, supporting lead copy on the right, bottom-aligned. That cadence works for top-level section openers with a `display-md` heading and a one-paragraph lead.
+
+It does **not** work for subsection openers where:
+- The heading is `.subsection-heading` (26px) rather than `display-md` (48px) — the small heading floats in a wide empty 8fr column, the lead crams into the 4fr column;
+- The lead is multiple lines or carries inline code, making it visually heavier than the heading;
+- The subsection's demo content below is itself complex enough that a wide, stacked introduction reads cleaner than a split one.
+
+For these cases use the `.is-stacked` modifier — heading and lead stack vertically in a single full-width column, 16px gap.
+
+```html
+<div class="section-heading is-stacked">
+  <h3 class="subsection-heading">Article shell primitives</h3>
+  <p class="lead">v1.8 — the chrome of the Article Page Template…</p>
+</div>
+```
+
+```css
+.section-heading.is-stacked {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .section-heading.is-stacked { grid-template-columns: 1fr; }
+}
+```
+
+**Rule of thumb:** if you're pairing `.subsection-heading` with a `.lead`, default to `.is-stacked`. Reserve the 8/4 split for `display-md` and `display-lg` section openers.
+
+### Subsection heading (`.subsection-heading`) — v1.10
+
+For in-section sub-headings (Article shell primitives, Article ending nav, code-block demos, etc.), use the dedicated `.subsection-heading` class — not `.heading-md` with an inline `font-size: 26px;` override.
+
+```css
+.subsection-heading {
+  font-family: 'Geist', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-wrap: balance;
+  margin: 0;
+}
+```
+
+```html
+<h3 class="subsection-heading">Article shell primitives</h3>
+<p class="lead">…</p>
+```
+
+**Why the dedicated class.** `.heading-md` is locked at 32px — its job is in-flow section titles. Earlier rounds rebranded the class inline to mean 18px / 20px / 26px / 28px depending on context, which is exactly the drift that erodes design-system discipline. The new class names the 22–26px tier explicitly. Anything below 22px is **not a heading** — use `body-lg` or a card-internal label class.
+
+**Unlike `.heading-md` and the display classes,** `.subsection-heading` does **not** carry the `js-reveal-text` masked word-reveal by default. Subsection headings are mid-section breaks, not section openers — the reveal animation reads as decorative noise on them. Add `js-reveal-text` explicitly only on the rare subsection that benefits from the entrance.
 
 ---
 
@@ -2101,3 +2193,53 @@ The site-header is `position: sticky; top: 0` and ~50px tall. Anchor scrolls (TO
 - **Inside-article body headings** — `.article-body h2, .article-body h3 { scroll-margin-top: 96px }`. The 96px is header height plus reading buffer; covers TOC clicks that point at in-body headings rather than top-level sections.
 
 If you add a new anchor-receiving heading family anywhere (sidebar headings, in-page tabs, etc.), declare its own `scroll-margin-top` rather than relying on `section[id]`. The default value is 0 — easy to forget, instantly visible as a bug when missed.
+
+### Build-time strip (`scripts/build-vercel.py`) — v1.10 boundary rule
+
+The Vercel production build strips the local-only Review Mode CSS and JS blocks from `homepage-showcase.html`. As of v1.10 the strip boundary is **sentinel-bounded**, not `</style>`-bounded. The Review Mode CSS block ends with an explicit comment:
+
+```css
+/* ==========================================================================
+   End of Review Mode CSS — strip terminates here. Any CSS below this line
+   ships to production. New component CSS must go ABOVE this sentinel.
+   ========================================================================== */
+```
+
+The regex in `strip_review_css()` terminates at this sentinel, not at `</style>`. **Don't remove the sentinel comment.** If you do, the strip fails open and either consumes every CSS rule below it (the v1.6/v1.10/etc. component blocks) or fails to match at all (build error).
+
+Why this rule exists: earlier rounds had `strip_review_css()` regex terminate at `</style>`. New component CSS added after the Review Mode block (the v1.6 `.note-card` / `.build-card` / `.research-card` definitions, the global `::selection` rules, the v1.10 `.subsection-heading` and `.article-hero-back-link`) was silently consumed by the strip. The deployed site rendered those cards as bare unstyled divs. The sentinel makes the strip range explicit.
+
+### Font-size lint (`scripts/lint-font-sizes.py`) — v1.10
+
+`python3 scripts/lint-font-sizes.py` scans `homepage-showcase.html` for any `font-size: Xpx` where `X < 11`, ignoring declarations inside the Review Mode CSS block. Exit code is non-zero on any violation. Run before publishing. Wire it into the pre-publish checklist alongside `build-vercel.py`.
+
+---
+
+## Showcase-only chrome (not for production)
+
+The showcase HTML (`homepage-showcase.html`) carries a small set of helper classes that exist **only to label and lay out demo content**. They are part of the showcase's review scaffolding — they should NOT appear on production marketing pages. They're documented here so anyone reading the showcase as reference can tell the canonical primitives apart from the scaffolding.
+
+### `.demo-label`
+
+The small mono-caps label that captions every example in the showcase ("Anchor pill — light", "Charcoal terminal — universal default for every code fence"). JetBrains Mono 11px / 0.2em / uppercase / `text-on-light-subtle` (or `-on-dark-subtle`), `margin: 0 0 12px`. Never carries semantic content — it's just chrome that names the demo below it. Don't ship to a marketing page; the marketing-page equivalent is no label, or a `mono-sm` section code instead.
+
+### `.demo-row`
+
+Horizontal flex container that lays out a row of small variant demos side-by-side (e.g., a button in default / hover / disabled states). `display: flex; flex-wrap: wrap; gap: 16px; align-items: center`. Showcase-only; production pages compose variants into the actual component they're demoing.
+
+### `.cards-grid`, `.cards-grid-2`, `.cards-grid-3`
+
+Generic responsive grid wrappers used to lay out demo cards in 2- or 3-column rows. `.cards-grid` is 1-column on mobile, 2-column at 768px+. `.cards-grid-3` is 1-column on mobile, 3-column at 1024px+. They have no component-specific styling — they're a sandbox grid for arranging demos. Don't use on production; the component patterns above (`.feature-card`, `.pricing-grid`, `.research-card-list`, etc.) carry their own canonical grids.
+
+**Rule of thumb:** any class name starting with `.demo-*` or `.cards-grid*` is showcase scaffolding. Production page builds should never import these.
+
+---
+
+## Changelog
+
+See the frontmatter `status:` line for the current version's headline summary. Older changes:
+
+- **v1.10** — Heading-md locked at 32px, new `.subsection-heading` class for 22–26px subsection headings (composes with the v1.9 walkback's "One code-block shape sitewide" demo and other in-section dividers). New `.section-heading.is-stacked` modifier for subsection openers — vertical stack of heading + lead instead of the default 8fr/4fr side-by-side grid. The Article shell primitives subsection adopts the stack and reorganizes its demo: TOC sits above (narrower 460px wrapper), article hero sits below at full width so the display-md title and deck read at editorial weight. `.frame` carries inner-frame padding via its own CSS rule (replaces inline `style="padding: 0 24px;"` on 14 sections); col-offset's redundant `padding-left` / `padding-right` removed. Build script's strip range is now sentinel-bounded (`/* … End of Review Mode CSS … */`), not `</style>`-bounded — fixes the silent loss of post-Review-Mode CSS in production. New lint script `scripts/lint-font-sizes.py` enforces the 11px floor in the showcase. `.article-hero-back-link` class promoted from inline `onmouseover` hack to a real CSS rule. `.demo-label` / `.demo-row` / `.cards-grid*` documented as Showcase-only chrome.
+- **v1.9** — Article ending nav, kicker category-collision rule, hub eyebrow redundancy rule, install snippet with copy button, project tile chip-hover rule. Walked back the v1.8 `pre:has(> code.language-text)` "code response" variant — every code fence renders with the charcoal terminal default. 27 inline `font-size: 10px` references in `globals.css` swept to 11px to match the v1.8 `mono-xs` token bump. Anti-pattern Don't added: don't repeat navigational context across adjacent UI elements.
+- **v1.8** — Article Page Template (article hero, shell, TOC). `mono-xs` floor lifted from 10px to 11px. Code-text variant for narrative request-flow traces (later walked back in v1.9). Pull-quote vertical-centering rule, anchor scroll-margin rule.
+- **v1.5** through **v1.7** — see git history.

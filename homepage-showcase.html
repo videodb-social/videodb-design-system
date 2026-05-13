@@ -200,7 +200,7 @@ code, pre, kbd, .font-mono {
 }
 .mono-xs {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   line-height: 1.2;
@@ -225,6 +225,10 @@ code, pre, kbd, .font-mono {
 .frame {
   max-width: var(--max-content);
   margin: 0 auto;
+  /* v1.10: inner-frame padding moved here from inline style="padding: 0 24px;"
+     on every section. Full-bleed cases (tickers, footer) opt out via inline
+     style="padding: 0;" on their own .frame element. */
+  padding: 0 var(--section-px);
   border-left: 1px solid var(--border-on-dark);
   border-right: 1px solid var(--border-on-dark);
 }
@@ -259,12 +263,12 @@ code, pre, kbd, .font-mono {
 .col-offset > .left-col {
   grid-column: span 12;
   margin-bottom: 24px;
-  padding-left: 24px; /* breathing room from vertical frame hairline */
+  /* v1.10: padding-left/right removed — .frame now provides the 24px
+     breathing room from the vertical hairlines via its own padding. */
 }
 .col-offset > .right-col {
   grid-column: span 12;
   max-width: 1100px;
-  padding-right: 24px; /* matching breathing room on the right */
 }
 @media (min-width: 768px) {
   .col-offset > .left-col { grid-column: span 3; margin-bottom: 0; }
@@ -427,7 +431,7 @@ code, pre, kbd, .font-mono {
 }
 .nav-mega-cell .num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   color: var(--color-primary);
@@ -489,7 +493,7 @@ code, pre, kbd, .font-mono {
 }
 .nav-dropdown-footer .meta {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -773,7 +777,7 @@ code, pre, kbd, .font-mono {
 }
 .lifecycle-card .lc-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   color: var(--color-primary);
@@ -907,7 +911,7 @@ code, pre, kbd, .font-mono {
 }
 .chip .chip-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(0,0,0,0.40);
@@ -985,7 +989,7 @@ code, pre, kbd, .font-mono {
   align-items: center;
   gap: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.45);
@@ -1342,7 +1346,7 @@ code, pre, kbd, .font-mono {
 .stat-num.is-brand { color: var(--color-primary); }
 .stat-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -1622,7 +1626,7 @@ code, pre, kbd, .font-mono {
 .icon-tile iconify-icon { color: var(--text-on-light-display); }
 .icon-tile .name {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-on-light-subtle);
@@ -1702,7 +1706,7 @@ code, pre, kbd, .font-mono {
 }
 .logo-tile .filename {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -1740,7 +1744,7 @@ code, pre, kbd, .font-mono {
 }
 .demo-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-on-light-subtle);
@@ -1770,7 +1774,7 @@ code, pre, kbd, .font-mono {
 .type-row:first-child { border-top: 0; }
 .type-row .type-name {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-on-light-subtle);
@@ -1867,7 +1871,7 @@ code, pre, kbd, .font-mono {
   align-items: center;
   gap: 28px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1964,7 +1968,7 @@ code, pre, kbd, .font-mono {
   padding: 4px 10px;
   border-radius: var(--r-control);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: lowercase;
   line-height: 1.4;
@@ -1991,7 +1995,7 @@ code, pre, kbd, .font-mono {
   align-items: center;
   gap: 12px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(0,0,0,0.55);
@@ -2043,7 +2047,7 @@ code, pre, kbd, .font-mono {
 }
 .diagram-tick {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.45);
@@ -2215,7 +2219,7 @@ code, pre, kbd, .font-mono {
 }
 .input-pill-helper {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.40);
@@ -2224,7 +2228,7 @@ code, pre, kbd, .font-mono {
 .input-pill-helper.is-error { color: var(--color-error); }
 .input-pill-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.55);
@@ -2239,7 +2243,7 @@ code, pre, kbd, .font-mono {
   padding: 8px 14px;
   border-radius: var(--r-control);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.65);
@@ -2291,7 +2295,7 @@ code, pre, kbd, .font-mono {
 }
 .entry-cat {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(0,0,0,0.55);
@@ -2319,7 +2323,7 @@ code, pre, kbd, .font-mono {
 .entry-meta {
   text-align: right;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(0,0,0,0.45);
@@ -2372,7 +2376,7 @@ code, pre, kbd, .font-mono {
 .project-tile-body { padding: 24px 24px 22px; }
 .project-tile-eyebrow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.45);
@@ -2399,7 +2403,7 @@ code, pre, kbd, .font-mono {
   align-items: center;
   gap: 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.70);
@@ -2517,7 +2521,7 @@ code, pre, kbd, .font-mono {
   top: 28px;
   right: 32px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(0,0,0,0.45);
@@ -2538,7 +2542,7 @@ code, pre, kbd, .font-mono {
   align-items: center;
   gap: 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(0,0,0,0.70);
@@ -2909,7 +2913,7 @@ code, pre, kbd, .font-mono {
   align-items: center;
   gap: 12px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-on-dark-subtle);
@@ -2976,7 +2980,7 @@ code, pre, kbd, .font-mono {
   background: rgba(0,0,0,0.65);
   backdrop-filter: blur(4px);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: #fff;
   z-index: 2;
@@ -3488,7 +3492,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .review-reply-head {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -3594,14 +3598,14 @@ body.review-sidebar-open .review-toolbar {
   border-radius: 999px;
   margin-right: 10px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
 }
 .review-section-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -3780,7 +3784,7 @@ body.review-sidebar-open .review-toolbar {
 .review-comment-card.is-orphaned { border-color: rgba(255,122,77,0.4); }
 .review-comment-card .num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--color-primary);
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -3788,7 +3792,7 @@ body.review-sidebar-open .review-toolbar {
 .review-comment-card.is-resolved .num { color: rgba(255,255,255,0.5); }
 .review-comment-card .target {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   color: rgba(255,255,255,0.5);
   margin-top: 4px;
   letter-spacing: 0.1em;
@@ -3809,7 +3813,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .review-comment-card .attach-meta {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.4);
@@ -3834,7 +3838,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .review-save-status .target-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.45);
@@ -3855,7 +3859,7 @@ body.review-sidebar-open .review-toolbar {
   border: 1px solid var(--border-on-dark);
   color: #fff;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 6px 10px;
@@ -3912,7 +3916,7 @@ body.review-sidebar-open .review-toolbar {
 @media (max-width: 640px) {
   .review-panel,
   .review-sidebar { width: 100vw; right: 0; }
-  .review-toolbar { top: 70px; right: 12px; padding: 8px 12px; font-size: 10px; }
+  .review-toolbar { top: 70px; right: 12px; padding: 8px 12px; font-size: 11px; }
   .review-fab { bottom: 16px; right: 16px; }
 }
 
@@ -4005,7 +4009,7 @@ body.review-sidebar-open .review-toolbar {
   justify-content: space-between;
   gap: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -4028,7 +4032,7 @@ body.review-sidebar-open .review-toolbar {
 .review-thread-meta {
   margin-top: 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.40);
@@ -4043,7 +4047,7 @@ body.review-sidebar-open .review-toolbar {
   border-radius: 9999px;
   color: rgba(255, 255, 255, 0.65);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -4065,7 +4069,7 @@ body.review-sidebar-open .review-toolbar {
 .review-extra-targets {
   padding: 6px 14px 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
@@ -4087,6 +4091,11 @@ body.review-sidebar-open .review-toolbar {
 .review-panel input[type="url"] {
   caret-color: var(--color-primary, #F24E1E);
 }
+
+/* ==========================================================================
+   End of Review Mode CSS — strip terminates here. Any CSS below this line
+   ships to production. New component CSS must go ABOVE this sentinel.
+   ========================================================================== */
 
 
 /* ==========================================================================
@@ -4140,7 +4149,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .note-card-kicker {
   font-family: var(--font-mono, "JetBrains Mono", monospace);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -4185,7 +4194,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .note-card-meta-line {
   font-family: var(--font-mono, "JetBrains Mono", monospace);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -4238,7 +4247,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .build-card-kicker {
   font-family: var(--font-mono, "JetBrains Mono", monospace);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -4307,7 +4316,7 @@ body.review-sidebar-open .review-toolbar {
 }
 .research-card-kicker {
   font-family: var(--font-mono, "JetBrains Mono", monospace);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -4361,7 +4370,7 @@ body.review-sidebar-open .review-toolbar {
   padding: 4px 10px;
   border-radius: 9999px;
   font-family: var(--font-mono, "JetBrains Mono", monospace);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: lowercase;
@@ -4388,6 +4397,53 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
 .display-xl *::selection, .display-lg *::selection, .display-md *::selection, .heading-md *::selection {
   background: var(--color-primary, #F24E1E);
   color: #FFFFFF;
+}
+
+/* ==========================================================================
+   v1.10 additions — sweep follow-ups from the v1.9 audit.
+
+   .subsection-heading — heading-md is locked at 32px. This new class is the
+   one sanctioned smaller heading for in-section subheadings (22–26px range).
+   Replaces the inline `style="font-size: 26px;"` overrides on .heading-md
+   that were silently rebranding the class to mean something it doesn't.
+
+   .article-hero-back-link — class-based hover for the kicker breadcrumb
+   back-link, matching the spec at § Article hero → Kicker breadcrumb.
+   Replaces the inline-style + onmouseover/onmouseout JS hack that the
+   spec's own anti-pattern rule (§ Don't) calls out.
+   ========================================================================== */
+.subsection-heading {
+  font-family: 'Geist', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-wrap: balance;
+  margin: 0;
+}
+
+/* Stacked variant of .section-heading — heading on top, lead below in a
+   single column, instead of the default 8fr/4fr side-by-side grid at md+.
+   Use for subsection openers where the body description is the same width
+   as the title would be, and the side-by-side layout reads as awkward
+   dead space rather than editorial cadence. */
+.section-heading.is-stacked {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .section-heading.is-stacked {
+    grid-template-columns: 1fr;
+  }
+}
+
+.article-hero-back-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms var(--ease-ui);
+}
+.article-hero-back-link:hover {
+  color: var(--color-primary);
 }
 </style>
 </head>
@@ -4563,7 +4619,7 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
 
 <!-- ─── COLOR TOKENS (DARK) ────────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">02 /<br>Color</div>
       <div class="section-heading">
@@ -4654,7 +4710,7 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
 
 <!-- ─── PILLS & TABS (DARK) ────────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">04 /<br>Pills & Tabs</div>
       <div class="section-heading">
@@ -4687,7 +4743,7 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
 
 <!-- ─── MONO BADGES (DARK) ─────────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">05 /<br>Mono Badges</div>
       <div class="section-heading">
@@ -4761,7 +4817,7 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
 
       <!-- v1.8: Pull quote (vertical-centered) + Decision list + Labeled callout -->
       <div class="section-heading" style="margin-top: 96px;">
-        <h3 class="heading-md" style="font-size: 26px;">Article-body structural primitives</h3>
+        <h3 class="subsection-heading">Article-body structural primitives</h3>
         <p class="lead">v1.8 — three patterns the Labs article markdown carries inline. Pull quote vertically centers content so the visible padding stays symmetric. Decision list is a hairline-row tier table for progressively-applicable trade-offs. Labeled callout is the canonical soft-light shape mapped onto the misnamed <code>.measurement-card</code> class.</p>
       </div>
 
@@ -4849,7 +4905,7 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
 
       <!-- v1.9: install snippet with copy button — canonical pattern for copyable commands -->
       <div class="section-heading" style="margin-top: 96px;">
-        <h3 class="heading-md" style="font-size: 26px;">Install snippet — mono command + copy</h3>
+        <h3 class="subsection-heading">Install snippet — mono command + copy</h3>
         <p class="lead">v1.9 — the canonical pattern for any copyable terminal command. Mono code on the left, copy pill on the right with a 1.8s confirmation flash. Use this anywhere a user might want to grab a one-line shell command (install scripts, getting-started, CLI invocations). Don't invent parallel <code>.copy-snippet</code> or <code>.command-block</code> shapes — one canonical install-snippet sitewide.</p>
       </div>
 
@@ -4886,7 +4942,7 @@ h1 *::selection, h2 *::selection, h3 *::selection, h4 *::selection, h5 *::select
 
       <!-- v1.9: code blocks — one shape sitewide (walkback from v1.8 language-text split) -->
       <div class="section-heading" style="margin-top: 64px;">
-        <h3 class="heading-md" style="font-size: 26px;">One code-block shape sitewide</h3>
+        <h3 class="subsection-heading">One code-block shape sitewide</h3>
         <p class="lead">v1.9 walkback — the soft-light <code>language-text</code> variant introduced in v1.8 was removed on review. Every code fence — Python, JS, bash, text — uses the single charcoal terminal default. The narrative-vs-real-code distinction is carried by the prose around the block, not by surface chrome. No per-language surface variants.</p>
       </div>
 
@@ -5113,7 +5169,7 @@ def results():
 
 <!-- ─── TICKER (DARK) ──────────────────────────────────────── -->
 <section class="section section-dark" style="padding: 0;">
-  <div class="frame">
+  <div class="frame" style="padding: 0;">
     <div class="ticker">
       <div class="ticker-track">
         <div class="ticker-item"><span class="pulse"></span> Live · 2.4M hours indexed</div>
@@ -5253,7 +5309,7 @@ def results():
 
 <!-- ─── LOGOS (DARK) ───────────────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">15 /<br>Logo Lockups</div>
       <div class="section-heading">
@@ -5275,10 +5331,10 @@ def results():
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════
-     LABS-BORROWED COMPONENTS · candidates for design.md
-     Six sections (16-21) demonstrating patterns lifted from the Labs
-     page. Each is a self-contained review unit — comment on any
-     element via Review Mode to keep, revise, or discard.
+     LABS-BORROWED COMPONENTS · promoted to design.md (v1.6–v1.10)
+     The sections below originated as candidates lifted from the Labs
+     page; they're now canonical primitives documented in
+     `videodb-design.md`. Kept here as the live showcase of each pattern.
      ═══════════════════════════════════════════════════════════ -->
 
 <!-- ─── EDITORIAL PRIMITIVES (LIGHT) ───────────────────────── -->
@@ -5363,53 +5419,56 @@ def results():
         </div>
       </div>
 
-      <!-- v1.8: Article hero kicker breadcrumb + Article TOC -->
-      <div class="section-heading" style="margin-top: 96px;">
-        <h3 class="heading-md" style="font-size: 26px;">Article shell primitives</h3>
+      <!-- v1.8: Article hero kicker breadcrumb + Article TOC.
+           Stacked layout (v1.10): heading + lead stack vertically; TOC sits
+           above the wide article hero, not beside it. -->
+      <div class="section-heading is-stacked" style="margin-top: 96px;">
+        <h3 class="subsection-heading">Article shell primitives</h3>
         <p class="lead">v1.8 — the chrome of the Article Page Template. Kicker breadcrumb consolidates back-link + category into one line (never use inline <code>color: "inherit"</code> on the link — inline overrides <code>:hover</code>). The right-rail TOC's brand-orange active line is geometrically aligned to overlap the grey hairline exactly; nudges right by 4px with smooth easing on scroll-driven state changes.</p>
       </div>
 
-      <div class="cards-grid cards-grid-2" style="margin-bottom: 24px;">
-        <div class="card-charcoal" style="padding: 32px;">
-          <div class="demo-label" style="color: var(--text-on-dark-subtle);">Article hero — kicker breadcrumb (dark hero context)</div>
-          <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin: 0 0 12px;">
-            <a href="#" style="color: inherit; text-decoration: none; transition: color 180ms ease;" onmouseover="this.style.color='#F24E1E'" onmouseout="this.style.color='inherit'">← Field Notes</a>
-            <span style="margin: 0 4px;">/</span>
-            <span>Media Infra</span>
-          </p>
-          <h4 style="font-family: 'Geist', sans-serif; font-size: clamp(28px, 3.2vw, 40px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.15; color: #fff; margin: 0 0 16px; text-wrap: balance;">The hidden 6 MB Lambda trap: compression and payload limits</h4>
-          <p style="font-size: 18px; line-height: 1.45; color: rgba(255,255,255,0.65); margin: 0 0 20px;">When Postman lies and AWS rejects: a story about boundary measurement and the negotiation that happens too late.</p>
-          <span class="byline is-dark">
-            <span class="byline-name">Rohit Garg</span>
-            <span class="byline-dot"></span>
-            <span>Field note</span>
-            <span class="byline-dot"></span>
-            <span>5 min</span>
-          </span>
-        </div>
-
-        <div>
-          <div class="demo-label">Article TOC — sticky right-rail with overlap-line active state</div>
-          <div class="card-soft" style="padding: 32px; background: #FFFFFF;">
-            <nav style="padding: 0 0 0 24px; border-left: 1px solid var(--border-on-light); max-width: 320px;">
-              <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.85); margin: 0 0 18px; padding-left: 6px;">In this note</p>
-              <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px;">
-                <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Problem</a></li>
-                <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">First, the Lambda boundary</a></li>
-                <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Then, compression negotiation</a></li>
-                <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--color-primary); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid var(--color-primary); transform: translateX(4px);">The gotcha in testing</a></li>
-                <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Fix</a></li>
-                <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">What changed in practice</a></li>
-                <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Production lesson</a></li>
-              </ul>
-            </nav>
-          </div>
+      <!-- Article TOC — narrower wrapper so the right-rail proportions read true to spec (220px sidebar in real use). -->
+      <div style="max-width: 460px; margin-bottom: 32px;">
+        <div class="demo-label">Article TOC — sticky right-rail with overlap-line active state</div>
+        <div class="card-soft" style="padding: 32px; background: #FFFFFF;">
+          <nav style="padding: 0 0 0 24px; border-left: 1px solid var(--border-on-light);">
+            <p style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(0,0,0,0.85); margin: 0 0 18px; padding-left: 6px;">In this note</p>
+            <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px;">
+              <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Problem</a></li>
+              <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">First, the Lambda boundary</a></li>
+              <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Then, compression negotiation</a></li>
+              <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--color-primary); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid var(--color-primary); transform: translateX(4px);">The gotcha in testing</a></li>
+              <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Fix</a></li>
+              <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">What changed in practice</a></li>
+              <li><a href="#" style="font-family: 'Geist', sans-serif; font-size: 14px; line-height: 1.5; color: rgba(0,0,0,0.65); text-decoration: none; display: block; padding: 4px 0 4px 28px; margin-left: -24px; border-left: 2px solid transparent;">Production lesson</a></li>
+            </ul>
+          </nav>
         </div>
       </div>
 
-      <!-- v1.9: Article ending nav — universal back-to-parent CTA at the foot of every article -->
-      <div class="section-heading" style="margin-top: 64px;">
-        <h3 class="heading-md" style="font-size: 26px;">Article ending nav</h3>
+      <!-- Article hero — full-width below the TOC, so the display-md title and deck read at their intended editorial weight. -->
+      <div class="card-charcoal" style="padding: 40px 48px; margin-bottom: 24px;">
+        <div class="demo-label" style="color: var(--text-on-dark-subtle);">Article hero — kicker breadcrumb (dark hero context)</div>
+        <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin: 0 0 12px;">
+          <a href="#" class="article-hero-back-link">← Field Notes</a>
+          <span style="margin: 0 4px;">/</span>
+          <span>Media Infra</span>
+        </p>
+        <h4 style="font-family: 'Geist', sans-serif; font-size: clamp(32px, 3.6vw, 48px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.15; color: #fff; margin: 0 0 16px; text-wrap: balance; max-width: 720px;">The hidden 6 MB Lambda trap: compression and payload limits</h4>
+        <p style="font-size: 18px; line-height: 1.45; color: rgba(255,255,255,0.65); margin: 0 0 20px; max-width: 640px;">When Postman lies and AWS rejects: a story about boundary measurement and the negotiation that happens too late.</p>
+        <span class="byline is-dark">
+          <span class="byline-name">Rohit Garg</span>
+          <span class="byline-dot"></span>
+          <span>Field note</span>
+          <span class="byline-dot"></span>
+          <span>5 min</span>
+        </span>
+      </div>
+
+      <!-- v1.9: Article ending nav — universal back-to-parent CTA at the foot of every article.
+           Stacked heading layout (v1.10) for consistency with the Article shell primitives subsection above. -->
+      <div class="section-heading is-stacked" style="margin-top: 64px;">
+        <h3 class="subsection-heading">Article ending nav</h3>
         <p class="lead">v1.9 — every article-template page closes with a back-to-parent CTA. Hairline divider above (full visual stop after the body), then a single Geist 17px back-link with a brand-orange arrow that translates left 4px on hover. Label flips to brand orange. Same shape across field-notes / how-i-built / newsletter — only the label text changes.</p>
       </div>
 
@@ -5437,7 +5496,7 @@ def results():
 
 <!-- ─── DIAGRAM CARDS (DARK) ───────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">17 /<br>Diagrams</div>
       <div class="section-heading">
@@ -5505,7 +5564,7 @@ def results():
 
 <!-- ─── FORM CONTROLS + SUBSCRIBE BAND (DARK) ──────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">18 /<br>Forms</div>
       <div class="section-heading">
@@ -5658,7 +5717,7 @@ def results():
 
 <!-- ─── PROJECT TILES (DARK) ───────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">20 /<br>Projects</div>
       <div class="section-heading">
@@ -5842,7 +5901,7 @@ def results():
 
 <!-- ─── 22 · FEATURE CARDS (DARK) ──────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">22 /<br>Feature</div>
       <div class="section-heading">
@@ -6018,7 +6077,7 @@ def results():
 
 <!-- ─── 25 · VIDEO EMBED (DARK) ────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">25 /<br>Video</div>
       <div class="section-heading">
@@ -6039,7 +6098,7 @@ def results():
 
 <!-- ─── 26 · PLAYLISTS (DARK) ──────────────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">26 /<br>Playlists</div>
       <div class="section-heading">
@@ -6199,7 +6258,7 @@ def results():
 
 <!-- ─── 28 · SOCIAL TESTIMONIALS (DARK) ────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">28 /<br>Testimonials</div>
       <div class="section-heading">
@@ -6413,7 +6472,7 @@ def results():
 
 <!-- ─── 29 · GITHUB REPO CARDS (DARK) ──────────────────────── -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">29 /<br>Open Source</div>
       <div class="section-heading">
@@ -6486,7 +6545,7 @@ def results():
 
 <!-- ─── 30 · IMAGE TICKER (DARK) ───────────────────────────── -->
 <section class="section section-dark" style="padding: 0;">
-  <div class="frame">
+  <div class="frame" style="padding: 0;">
     <div class="ticker image-ticker">
       <div class="ticker-track">
         <span class="image-ticker-item">VideoDB</span>
@@ -6517,7 +6576,7 @@ def results():
      - .build-card (dark feature card with rotating arrow)
 -->
 <section class="section section-dark">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">31 /<br>Labs Cards</div>
       <div class="section-heading">
@@ -6607,7 +6666,7 @@ def results():
 
 <!-- ─── 32 · RESEARCH CARD (LIGHT) ─────────────────────────── -->
 <section class="section section-light">
-  <div class="frame" style="padding: 0 24px;">
+  <div class="frame">
     <div class="section-heading-wrap" style="display:grid; grid-template-columns: 1fr; gap: 24px;">
       <div class="section-code">32 /<br>Research Card</div>
       <div class="section-heading">

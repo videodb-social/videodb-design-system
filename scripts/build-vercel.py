@@ -40,17 +40,26 @@ VERCEL_JSON = """{
 def strip_review_css(html: str) -> str:
     """
     Remove the Review Mode CSS block from inside <style>...</style>.
+
     The block starts at the comment '/* ==... Review Mode (?review=1) ...'
-    and extends to the line just before '</style>'.
+    and ends at the matching sentinel comment
+    '/* ==... End of Review Mode CSS ... */' — NOT at '</style>'. Earlier
+    versions terminated at '</style>' which silently consumed any component
+    CSS that lived between the Review Mode block and the closing tag —
+    including the v1.6 card additions (.note-card, .build-card,
+    .research-card) added after Review Mode was authored. The sentinel
+    makes the strip range explicit and self-documenting.
     """
     pattern = re.compile(
-        r"\n\s*/\* =+\n\s*Review Mode \(\?review=1\)[\s\S]*?(?=</style>)",
+        r"\n\s*/\* =+\s*\n\s*Review Mode \(\?review=1\)[\s\S]*?End of Review Mode CSS[\s\S]*?\*/",
         flags=re.MULTILINE,
     )
     new, n = pattern.subn("\n", html, count=1)
     if n != 1:
         raise RuntimeError(
-            "Could not locate the Review Mode CSS block (expected exactly 1 match)."
+            "Could not locate the Review Mode CSS block (expected exactly 1 match). "
+            "Check that the '/* ... End of Review Mode CSS ... */' sentinel still "
+            "exists in homepage-showcase.html immediately after the Review Mode block."
         )
     return new
 
