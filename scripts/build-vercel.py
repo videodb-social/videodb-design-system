@@ -95,17 +95,30 @@ def main():
     out_lines = len(html.splitlines())
     saved = src_lines - out_lines
 
-    # Reset deploy folder
-    if DEPLOY.exists():
-        shutil.rmtree(DEPLOY)
-    DEPLOY.mkdir(parents=True)
+    # Build into the deploy folder. **In-place update** — never `rmtree` the
+    # whole folder because Vercel keeps `.vercel/project.json` (its project
+    # link) here, plus `.env.local` and `.gitignore`. Wiping the folder
+    # disconnects the project from `vercel --prod`. Instead: overwrite the
+    # files we own; refresh the assets folder only.
+    DEPLOY.mkdir(parents=True, exist_ok=True)
 
     (DEPLOY / "design-system.html").write_text(html)
-
-    # Copy assets verbatim
-    shutil.copytree(SRC_ASSETS, DEPLOY / "assets")
-
     (DEPLOY / "vercel.json").write_text(VERCEL_JSON)
+
+    # Refresh assets/ — remove + recopy only the assets subtree
+    assets_dst = DEPLOY / "assets"
+    if assets_dst.exists():
+        try:
+            shutil.rmtree(assets_dst)
+        except PermissionError as e:
+            # Some sandboxes can't delete protected files inside the deploy
+            # folder. If assets haven't changed since the last build this
+            # is harmless — skip and let the existing copy stand.
+            print(f"  (skipped assets refresh: {e})")
+        else:
+            shutil.copytree(SRC_ASSETS, assets_dst)
+    else:
+        shutil.copytree(SRC_ASSETS, assets_dst)
 
     print(f"✔ Built → {DEPLOY.relative_to(ROOT)}/")
     print(f"  design-system.html   ({out_lines} lines, stripped {saved} review-mode lines)")

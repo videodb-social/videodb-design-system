@@ -88,13 +88,47 @@ You can pre-set `data-comment-id` on an element manually to override the auto-ta
 
 To add support for new component classes, edit the `autoTag()` function in `review-mode.js`.
 
+## v3 changes (May 2026)
+
+The harness now supports four interaction improvements:
+
+1. **Sidebar-open gate.** Pin-drop / hover labels are dormant whenever the Feedback sidebar is closed — page clicks behave normally (links navigate, buttons fire, inputs focus). Toggling the FAB enables review mode. This means `?review=1` is no longer "review mode globally on"; it's "review mode available, currently off." Open the sidebar to activate pin-drop.
+2. **ESC layered close.** ESC closes the active panel first; on a second press it clears any pending Cmd+click selection; on a third press it closes the sidebar.
+3. **Cmd-hold for granular selection + multi-select.** Hold ⌘ (Mac) or Ctrl (Win) to switch from "closest tagged ancestor" to "deepest tagged descendant under the cursor." Cmd+click accumulates elements into a selection set — clicking off (or clicking the floating bottom-center chip) opens one comment panel that targets all selected elements at once. A multi-target comment writes `target.additional_targets[]` into the bundle.
+4. **Threaded follow-ups.** Each comment now carries a `history[]` array. When Claude replies (response bundle import), the reply gets appended to history rather than overwriting a single `claude_reply` field. The panel shows the full timeline as alternating user/Claude bubbles. A "Didn't fix it" thumbs-down on any Claude reply prompts a follow-up that's saved as a new user entry in the same comment, with `in_response_to: <reply_index>`. Status flips back to `open`. Top-level `comment` and `claude_reply` fields stay populated with the latest values for backwards compat.
+
+The bundle version is now `3`. Older v2 bundles still load — they're migrated on the fly: each pre-existing `comment` + `claude_reply` pair becomes a 2-entry history. Response bundles emitted by the AI are unchanged (the harness handles the migration on import).
+
+## v4 changes (May 2026)
+
+Six further upgrades layered on v3:
+
+1. **Pin-mode toggle (the toolbar pill is now a real button).** Previously the `REVIEW MODE` pill in the top-right was decorative; clicking it did nothing. In v4 it's the on/off toggle for pin behavior while the sidebar is closed. Default state: **ON** (orange pulsing dot + bright label) — drop pins anywhere on first load. Click → **OFF** state (hollow dot + muted label "Review Mode · Off"), pin-drop pauses, page navigates normally. Click again → ON. Choice persists across reload via `localStorage` key `videodb-review-pin-mode`. The pill hides automatically while the sidebar is open (mode is implicit then). Drives a `body.review-sidebar-open` class for CSS hide/show.
+
+2. **`isReviewActive()` gate updated.** Was `sidebar.classList.contains('is-open')`. Now `sidebar.classList.contains('is-open') || state.pinMode`. Translation: pinning is active when EITHER the sidebar is open OR the user has explicitly enabled pin mode via the toolbar. Solves the "right side of page blocked by sidebar" problem — close the sidebar, the right side is reachable, pins still drop.
+
+3. **Edit-in-place panel UX.** Three flavors of comment panel:
+   - **New comment** — empty textarea, no thread.
+   - **Existing without Claude reply** (edit-in-place) — textarea is pre-populated with the existing comment text. NO thread display. Saving overwrites the existing comment. Matches the user mental model of "click into it to change."
+   - **Existing with Claude reply** (follow-up) — full history thread shown as bubbles above an empty textarea. Saving appends a new user entry to history. Status flips back to `open`.
+   
+   Previously v3 always showed a follow-up framing on click — felt misleading when no Claude reply existed yet.
+
+4. **Slim attachment persistence (localStorage quota fix).** Base64 image payloads inside attachments blow past localStorage's 5–10 MB cap with just a handful of pasted screenshots. v4 strips the heavy `data` field on persist (keeps `name` / `type` / `size` metadata). The in-memory state retains full data URLs so bundle submission still carries the images. Trade-off: a page reload loses attachment blobs (comment text and attachment names persist; user re-attaches if needed).
+
+5. **Selection / caret visibility inside the review panel.** Page-level `::selection` rules can be invisible on the panel's charcoal surface. v4 scopes `caret-color: var(--color-primary)` and `::selection { background: var(--color-primary); color: #FFFFFF }` to `.review-panel input, .review-panel textarea` so the input affordances are visible.
+
+6. **autoTag expansions for the Article Page Template.** Tags `.article-hero`, `.article-hero-kicker`, `.article-hero-deck`, `.article-toc`, `.article-toc-label`, `.article-shell-inner`, plus markdown-embedded blocks: `.article-diagram`, `.diagram-step`, `.split-cases`, `.case-card.success/.danger`, `.measurement-card`, `.decision-list`, `.callout`. Lets the user pin directly on a diagram step or case card instead of always landing on the article-body wrapper.
+
+The bundle version field is still `3` — v4 changes are interaction + persistence, not schema. The pin-mode pref lives in its own localStorage key (`videodb-review-pin-mode`), not in the comments bundle.
+
 ## Feedback bundle schema (what gets exported)
 
 When the user clicks **Submit feedback**, the harness writes this JSON shape to `feedback-bundle-LATEST.json`:
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "exported_at": "ISO-8601 timestamp",
   "page_url": "file:///... or https://...",
   "page_title": "<title> of the page",
@@ -110,9 +144,12 @@ When the user clicks **Submit feedback**, the harness writes this JSON shape to 
         "comment_id": "Card · card-soft · Tag chips — light",
         "selector_path": "section.section-light > .frame > ...",
         "outerHTML_snippet": "<div class=\"card-soft\">...</div>",
-        "pin_position": { "x_pct": 45.2, "y_pct": 30.1 }
+        "pin_position": { "x_pct": 45.2, "y_pct": 30.1 },
+        "additional_targets": [
+          { "comment_id": "Card · ... · #2", "selector_path": "...", "outerHTML_snippet": "..." }
+        ]
       },
-      "comment": "Free-form user comment text.",
+      "comment": "(latest user follow-up text — convenience copy of the last user history entry)",
       "attachments": [
         {
           "name": "screenshot.png",
@@ -124,11 +161,36 @@ When the user clicks **Submit feedback**, the harness writes this JSON shape to 
       "links": ["https://figma.com/..."],
       "created_at": "ISO-8601",
       "updated_at": "ISO-8601",
-      "claude_reply": "(present after a response bundle is imported)"
+      "claude_reply": "(latest Claude reply — convenience copy of the last claude history entry)",
+      "history": [
+        {
+          "role": "user",
+          "text": "Original comment text…",
+          "attachments": [...],
+          "links": [...],
+          "created_at": "ISO-8601"
+        },
+        {
+          "role": "claude",
+          "text": "Claude's reply…",
+          "created_at": "ISO-8601"
+        },
+        {
+          "role": "user",
+          "text": "Follow-up after Claude's first reply…",
+          "attachments": [...],
+          "in_response_to": 1,
+          "created_at": "ISO-8601"
+        }
+      ]
     }
   ]
 }
 ```
+
+- `target.additional_targets` is only present on multi-element comments (Cmd+click chain). For single-element comments, omit.
+- `history[].in_response_to` is the index (0-based) of the Claude reply this follow-up is replying to. Useful when Claude's response addressed only part of the original ask — the AI knows which prior reply the user found insufficient.
+- `comment` and `claude_reply` at the top level are convenience mirrors of the last user / last Claude history entries respectively. AI processors that haven't been updated to read `history` keep working; the most recent exchange is still in the canonical fields.
 
 ### AI-side processing — recommended pattern
 
@@ -159,9 +221,11 @@ When the user says "the bundle is ready" or similar:
 
 Save as `response-bundle-LATEST.json` in the same folder the user submitted from. They click **Load Claude responses…** in the sidebar and the harness:
 - Finds each comment by `comment_id`
-- Sets `claude_reply` on the comment object
+- **Appends** a `{ role: 'claude', text: reply, created_at: now }` entry to `comment.history` (preserving the prior thread). Also writes the same value to the top-level `claude_reply` field for backwards compat.
 - Flips `status` to whatever `new_status` says (typically `needs-review`)
 - Re-renders pins (now blue) and the sidebar list
+
+If the user follows up via the "Didn't fix it" thumbs-down, the next bundle submission will carry the prior Claude reply AND the follow-up user entry in `history`. Claude can see the full thread when responding the next round — no need to rebuild context from a separate "previous attempts" channel.
 
 ## Saving target — File System Access API
 

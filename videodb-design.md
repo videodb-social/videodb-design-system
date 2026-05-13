@@ -1,8 +1,8 @@
 ---
-version: "videodb-design-v1.7"
+version: "videodb-design-v1.8"
 name: "VideoDB — Agentic Website Design System"
 description: "Single source of truth for videodb.io. Editorial typography on Geist, deliberate 8px spacing, restrained motion, dual-radius shape language, and a confident dark↔light section alternation anchored by one brand orange (#F24E1E). Suited to product narratives, infrastructure storytelling, and interface-first landing experiences."
-status: "v1.7 — adds the showcase additions from rounds 12-14: feature-card row (3-up icon + title + body on light), modal/dialog primitive (backdrop scrim + charcoal card + dark-grey close button with a plain × glyph, NOT a circled-icon pill), multi-field forms (form-row two-column grid, .input-select with custom caret SVG, .input-textarea moderate-radius surface, plus the .on-light scope which inverts surface direction so inputs sit LIGHTER than the host card and progress to near-white on focus), video-embed (16:9 iframe in card chrome, no caption), playlist row (thumbnail + play badge + video-count pill, with a 45%-black hover overlay), use-case + chart composition, social testimonials ticker (two rows running opposite directions via WAAPI playbackRate — switched off the CSS animation-duration approach which caused position-snapping jitter on hover), repo cards (sized-up text variant of card-soft for GitHub-style attribution), and image ticker (horizontal marquee variant of the existing ticker). Also documents two new structural conventions: the `.is-static` modifier on `.card-soft` (suppresses the inherited card hover when nested interactive children own the hover state), and the celebratory sent-state pattern for form submit buttons (black clip-mask grows from centre over orange surface + two-tone copy + bouncing orange check + 5s auto-reset, with an `opacity: 1` override on `[disabled]` so the global button-disabled dimming doesn't mute the success). Future changes require a version bump."
+status: "v1.8 — adds the Article Page Template, drawn from the Labs engineering blog rebuild (engineering/field-notes, how-i-built, newsletter). New top-level sections: Article hero (dark, WebGL-backed, kicker-breadcrumb pattern that consolidates the back-link into the kicker as `← Section / Category`), Article shell (2-column grid `minmax(0, 1fr) 220px` collapsing below 1024px, padding-top 40px so body hugs the hero), and Article TOC (sticky right-rail, 1px grey hairline as parent border, links pulled flush with `margin-left: -24px` so the 2px brand-orange `.is-active` border overlaps the hairline exactly, `translateX(4px)` active nudge, 280ms cubic-bezier(0.2, 0.7, 0.2, 1) easing, scroll-position-based active detection with bottom-of-document fallback). Also documents the markdown-embedded structural blocks the Labs content carries: `.decision-list` (no-surface three-column hairline-row tier table with CSS-counter ranks), `.measurement-card` (REMAPPED to the canonical `.callout` shape after the original charcoal-surface version produced dark-on-dark labels — class name says number-callout but actual content is labeled-checklist, so use the existing callout vocabulary), `.article-diagram` / `.diagram-step` / `.diagram-arrow` (horizontal flow on charcoal), and `.split-cases` + `.case-card.success/.danger`. New Code Blocks variant: `pre:has(> code.language-text)` renders narrative request-flow traces with the lighter 'code response' treatment (soft-light surface + brand-orange left rail) instead of the charcoal terminal — language-python/js/bash keeps the terminal default. New Pull-quote vertical-centering rule: blockquotes use `display: flex; flex-direction: column; justify-content: center` with `min-height: 64px` and zero the trailing margin on the last child to avoid bottom-heavy spacing. Anchor scrolling: every in-article-body h2/h3 carries `scroll-margin-top: 96px` to clear the sticky site-header. Token bump: `mono-xs` floor lifts from 10px → 11px (no microcopy below 11px sitewide); component descriptions that previously called out 10px for `mono-xs` get the sweep. New anti-pattern documented under Don't: inline `style={{color: 'inherit'}}` on a `<Link>` overrides CSS `:hover` rules via inline-style specificity — use a `className` so the cascade governs both states. Reduced-motion section extended to call out the TOC's translate-X and transition resets. Future changes require a version bump."
 supersedes:
   - "uploads/NEO-videodb-design.md (v1.1)"
   - "references/neu-videodb-DESIGN.md (Nexus / Vision & Logic ancestor)"
@@ -112,7 +112,7 @@ typography:
     textTransform: "uppercase"
   mono-xs:
     fontFamily: "JetBrains Mono"
-    fontSize: "10px"
+    fontSize: "11px"   # v1.8: lifted from 10px — no microcopy smaller than 11px sitewide.
     fontWeight: 500
     lineHeight: "1.2"
     letterSpacing: "0.2em"
@@ -401,7 +401,7 @@ Geist carries the entire system — display, body, and UI. JetBrains Mono is res
 - **Body MD** — Geist 16px / 400 / 1.6. Default body.
 - **Label MD** — Geist 14px / 400 / 20px. UI labels, button text, nav links.
 - **Mono SM** — JetBrains Mono 12px / 500 / 0.2em / **uppercase**. Section codes and chrome.
-- **Mono XS** — JetBrains Mono 10px / 500 / 0.2em / uppercase. Card meta-labels and tier markers.
+- **Mono XS** — JetBrains Mono 11px / 500 / 0.2em / uppercase. Card meta-labels and tier markers. (v1.8 floor — was 10px in earlier versions; the chrome got hard to read on hi-DPI displays. **No microcopy below 11px sitewide.**)
 
 Display weights stay light (300–400) at large sizes — the tight tracking does the work. Never go above weight 400 except in mono labels and lifecycle titles (500).
 
@@ -623,7 +623,7 @@ Use this pattern any time a page has named sections you want to advertise upfron
 Small, lowercase mono chip for inline metadata: `python`, `latency`, `infra`, `agents`. Smaller and quieter than mono badges (which are featured chrome). Used inline alongside titles, on entry rows, dispatch cards, project tiles.
 
 - **Padding** 4px×10px, full pill radius.
-- **Typography** JetBrains Mono 10px, weight 400, letter-spacing **0.08em** (looser than `mono-sm`'s 0.2em — these are not chrome-shouty), `text-transform: lowercase`.
+- **Typography** JetBrains Mono 11px, weight 400, letter-spacing **0.08em** (looser than `mono-sm`'s 0.2em — these are not chrome-shouty), `text-transform: lowercase`.
 - **Light variant** — `rgba(0,0,0,0.04)` background, 1px `rgba(0,0,0,0.08)` border, text `rgba(0,0,0,0.70)`.
 - **Dark variant** — `rgba(255,255,255,0.04)` background, 1px `rgba(255,255,255,0.08)` border, text `rgba(255,255,255,0.65)`.
 
@@ -638,7 +638,7 @@ Direction is non-negotiable: chips **pop forward** as their host card recedes, n
 
 Inline metadata string: *Author · kind · date · read-time*, with small circular dots as separators. Used on field-note entries, version stamps, dispatch cards, anywhere an author or version context belongs inline.
 
-- **Container** `display: inline-flex`, gap 12px, JetBrains Mono 10px uppercase 0.2em letter-spacing, color `rgba(0,0,0,0.55)` (light) or `rgba(255,255,255,0.55)` (dark).
+- **Container** `display: inline-flex`, gap 12px, JetBrains Mono 11px uppercase 0.2em letter-spacing, color `rgba(0,0,0,0.55)` (light) or `rgba(255,255,255,0.55)` (dark).
 - **`.byline-name`** the author name only — Geist 13px, letter-spacing -0.01em, `text-transform: none`, color `rgba(0,0,0,0.78)` (light) or `rgba(255,255,255,0.85)` (dark). Higher visual weight than the surrounding mono bits.
 - **`.byline-dot`** 3px × 3px circle, `currentColor` at 0.6 opacity — subtle visual punctuation between fields.
 
@@ -650,7 +650,7 @@ A two-option segmented control. Use when a UI needs a single binary choice: List
 
 **Anatomy:**
 - Wrap two `.mode-toggle` buttons in a container with `role="group"` and a 4px-padded pill-shaped chrome (`rgba(255,255,255,0.04)` background + 1px hairline border, full pill radius).
-- Each button is a `<button class="mode-toggle">` with a Solar icon and label. JetBrains Mono 10px, 0.2em letter-spacing, uppercase, color `rgba(255,255,255,0.65)`.
+- Each button is a `<button class="mode-toggle">` with a Solar icon and label. JetBrains Mono 11px, 0.2em letter-spacing, uppercase, color `rgba(255,255,255,0.65)`.
 - The active button carries `.is-active` — background brightens to `rgba(255,255,255,0.10)`, text to full white.
 - Click-to-switch behavior: a JS handler on `[role="group"]` removes `.is-active` from all siblings and applies it to the clicked button.
 
@@ -891,8 +891,8 @@ The canonical text input pattern for VideoDB surfaces. Used for email capture, s
 - **`.is-buzz`** — short-lived class applied alongside `.is-error` to trigger the buzz animation (see below). Removed after 400ms so it can replay on next invalid attempt.
 
 **Companions:**
-- **`.input-pill-label`** — JetBrains Mono 10px / 0.2em / uppercase, color `0.55` white (or `0.55` black on light), shown above the input as the field label.
-- **`.input-pill-helper`** — JetBrains Mono 10px / 0.18em / uppercase below the input. Default color `0.40` white. The `.is-error` modifier on the helper text flips it to `var(--color-error)`.
+- **`.input-pill-label`** — JetBrains Mono 11px / 0.2em / uppercase, color `0.55` white (or `0.55` black on light), shown above the input as the field label.
+- **`.input-pill-helper`** — JetBrains Mono 11px / 0.18em / uppercase below the input. Default color `0.40` white. The `.is-error` modifier on the helper text flips it to `var(--color-error)`.
 
 #### Buzz animation — invalid input feedback
 
@@ -1035,9 +1035,9 @@ Horizontal scroll-row of video / module thumbnails. Used for course tracks, tuto
 - `.playlist-card` — Vertical stack: thumbnail on top, metadata below. Width `260px`, gap with siblings `20px`.
 - `.playlist-thumb` — `aspect-ratio: 16 / 9`, charcoal `#161616` surface, 12px radius, `overflow: hidden`, contains an abstract token-built SVG (waveform, grid, terminal lines, etc. — no real video stills, no third-party logos).
 - `.playlist-play` — Absolutely positioned centre play badge. 48×48 circle, default `rgba(255,255,255,0.15)` + 1px `rgba(255,255,255,0.30)` border, white play-triangle glyph. On parent hover scales to `1.08×` and surface flips to brand orange.
-- `.playlist-count` — Bottom-right pill on the thumbnail. JetBrains Mono 10px / 0.2em / uppercase, `[12 VIDEOS]` style, `rgba(0,0,0,0.65)` background with backdrop-blur, `1px rgba(255,255,255,0.20)` border. Always above the hover overlay.
+- `.playlist-count` — Bottom-right pill on the thumbnail. JetBrains Mono 11px / 0.2em / uppercase, `[12 VIDEOS]` style, `rgba(0,0,0,0.65)` background with backdrop-blur, `1px rgba(255,255,255,0.20)` border. Always above the hover overlay.
 - `.playlist-title` — Geist 15px / 500 / `text-on-dark`, max 2 lines via `-webkit-line-clamp`.
-- `.playlist-meta` — JetBrains Mono 10px / 0.2em / uppercase, single line of `duration · category` below the title.
+- `.playlist-meta` — JetBrains Mono 11px / 0.2em / uppercase, single line of `duration · category` below the title.
 
 **Hover overlay (mandatory).** On `.playlist-card:hover`, a `.playlist-thumb::after` pseudo-element fades in over the entire thumbnail:
 
@@ -1418,7 +1418,228 @@ The first group ("Video was built for / people to watch.") sets the premise — 
 
 The pattern is *muted-muted | white-orange* — three tonal steps without any weight or size variation. The contrast verbs ("watch" vs "understand") are the point of the heading; orange does the work, no weight bump needed.
 
-## ASCII / WebGL Atmospherics
+## Article Page Template
+
+The shape used for long-form content on Labs — `engineering/field-notes/*`, `engineering/how-i-built/*`, `engineering/newsletter/[issue]`. Three section types share the same shell; only the kicker copy and the WebGL variant change. Composed of four layered primitives: article hero (dark, WebGL-backed) → article shell (2-col grid: body + sticky TOC rail) → article body (prose + embedded structural blocks) → subscribe block (when applicable).
+
+### Article hero (dark, WebGL-backed)
+
+Full-bleed dark hero (`background: #0A0A0A`) sized to fit kicker + h1 + deck + byline. Hosts a per-section WebGL atmosphere overlay through the standard `NeuralNetwork` component (variant `"flow"` for how-i-built, `"pulse"` for newsletter, `"article"` for field-notes, `"cluster"` for project detail).
+
+**Anatomy** — top-to-bottom inside `.article-hero .framed-column.article-hero-inner` (inline `padding: 0 24px` — the hairline rule from § Layout applies here too):
+
+1. **Kicker breadcrumb** (`.article-hero-kicker`) — one mono-caps 11px line of the shape `← Section / Category` or `← Newsletter / issue #N · date`. See § Kicker breadcrumb below.
+2. **h1** — display-md, **singular white** (NOT two-tone — explicit exception to the standard headline rule; article titles are document titles, not section punchlines, so the contrast-verb pattern doesn't apply).
+3. **Deck** (`.article-hero-deck`) — Geist 24px / 1.4 / `rgba(255, 255, 255, 0.65)`, 56ch max.
+4. **Byline** (`.byline.is-dark`) — author · type · date, mono-xs, separator dots.
+
+**Padding** — 96px top, 72px bottom. The hero is internally framed (not external section padding), so it stays adjacent to the next section without gap.
+
+**Variants by section** — `field-notes` → `article`, `how-i-built` → `flow`, `newsletter` → `pulse`. Each WebGL variant has tuned node count, orbit radius, oscillation amplitude, distortion frequency, point size and opacity. Documented in § ASCII / WebGL Atmospherics.
+
+### Kicker breadcrumb pattern (`.article-hero-kicker` with embedded `<Link>`)
+
+Consolidates the old "standalone `← Section` back-link" and the "category eyebrow" into one tight line. Result reads as a breadcrumb:
+
+```
+← FIELD NOTES / MEDIA INFRA
+```
+
+Implementation rules:
+
+- The `← Section` portion is a `<Link>` with `className="article-hero-back-link"`. **Never inline `style={{ color: "inherit" }}`** — inline styles beat CSS `:hover` rules on specificity, and the hover state silently never fires. Use a class and let the cascade govern resting + hover. (See § Don't.)
+- Resting color: `inherit` (so the back link matches the kicker's muted color and the line reads as one breadcrumb).
+- Hover color: `var(--color-primary)`. Standard 180ms `var(--dur-ui)` transition.
+- The trailing `/ Category` part is plain text — it does not navigate, it adds context.
+- Same pattern across the three article types: `← Field Notes / Media Infra` · `← How I Built / Pipelines` · `← Newsletter / issue #03 · Jan 14, 2026`.
+
+### Article shell layout (`.article-shell`, `.article-shell-inner`)
+
+The body container below the hero. Internal padding-top is **40px** — deliberately tight, so the article reads as one continuous flow from the hero into the prose rather than two stranded sections separated by dead space. (The original 80px was too much.)
+
+`.article-shell-inner` is a 2-column grid:
+
+```css
+.article-shell-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  column-gap: 64px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .article-shell-inner { grid-template-columns: 1fr; column-gap: 0; }
+}
+```
+
+Below 1024px the TOC drops into the flow above the body (see § Article TOC). The 220px right column is intentional: large enough for two-line link labels, small enough not to compete with the body for attention.
+
+### Article body type scale + anchor scroll
+
+Inside `.article-body`:
+
+- `h2` — `clamp(24px, 2.5vw, 32px) / 400 / -0.02em / 1.2`, `margin: 56px 0 16px`, `text-wrap: balance`.
+- `h3` — 22px / 400 / -0.02em / 1.25, `margin: 40px 0 12px`.
+- `p` — 16px / 1.65, `margin: 0 0 20px`.
+
+**Anchor scrolling rule (universal):** every h2/h3 inside `.article-body` carries `scroll-margin-top: 96px`. The site-header is sticky (~50px tall); without this rule, clicking a TOC entry lands the heading flush at the top of the viewport, hidden under the header. 96px = header height + ~46px reading buffer. The existing `section[id] { scroll-margin-top: 72px }` rule from § Layout does NOT cover this case because the TOC anchors target headings inside the body, not top-level sections.
+
+## Article TOC (right-rail navigation)
+
+The sticky right rail that lives inside `.article-shell-inner`. Lists every `h2` (and optionally `h3`) in the article body as a vertical link list. Reads as "In this note" / "In this build" / "In this article" depending on context. Single component on Labs: `app/article-toc.tsx`.
+
+**Anatomy** — `<nav class="article-toc">` with a label paragraph + `<ul>` of links.
+
+- **Container** — `position: sticky; top: 96px; align-self: start; padding: 0 0 0 24px; border-left: 1px solid var(--border-on-light); max-height: calc(100vh - 128px); overflow-y: auto;`. The `border-left` is the grey hairline that makes the rail visually distinct.
+- **Label** (`.article-toc-label`) — JetBrains Mono **13px** / 500 / 0.2em / uppercase / `rgba(0, 0, 0, 0.85)`. `padding-left: 6px` so the label x-position aligns with the link text below it (links are pulled flush with the parent border and have 28px padding — the label compensates so all text is left-aligned). `margin: 0 0 18px`.
+- **Links** (`.article-toc a`) — Geist **14px** / 400 / -0.005em / 1.5 / `rgba(0, 0, 0, 0.65)`. Intentionally NOT mono — content, not chrome.
+
+**The critical geometry — line overlap on active state:**
+
+```css
+.article-toc a {
+  margin-left: -24px;           /* pull the link flush against the TOC's left border */
+  padding-left: 28px;           /* push text comfortably clear of the rail */
+  border-left: 2px solid transparent;
+  transform: translateX(0);
+  transition: color 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+              border-color 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+              transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.article-toc a.is-active {
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  font-weight: 500;
+  transform: translateX(4px);   /* nudge — secondary cue alongside the color flip */
+}
+```
+
+The `margin-left: -24px` matches the parent TOC's `padding-left: 24px` exactly, so the link's left edge sits **on top of the parent's left border**. The 2px brand-orange `border-left` then overlaps the 1px grey hairline cleanly when active — no parallel-lines look. The 4px translate is the secondary cue: even with a color-blind viewer the position shift signals which row is active.
+
+**Easing.** `280ms cubic-bezier(0.2, 0.7, 0.2, 1)` — gentle ease-out with a long settling tail. Applied uniformly to `color`, `border-color`, and `transform` so the active mark glides as one motion. Honors `prefers-reduced-motion: reduce` (no transform, no transitions).
+
+**Active-section detection.** Use a scroll-position approach (NOT pure IntersectionObserver). Pseudocode:
+
+```
+const OFFSET = 120;  // header (~50px) + reading buffer
+const BOTTOM_TOLERANCE = 24;
+
+onScroll (rAF-throttled):
+  if (scrollY + viewportHeight >= docHeight - BOTTOM_TOLERANCE):
+    setActive(lastHeading.id)        // bottom-of-document override
+  else:
+    for each heading top-to-bottom:
+      if heading.top <= OFFSET: active = heading.id
+      else: break
+    setActive(active)
+```
+
+The bottom-of-document override is non-negotiable. Pure-IntersectionObserver implementations using a narrow "active zone" (rootMargin: -25%/-60%) leave the last heading permanently un-highlighted whenever there's not enough content below it to push it into the zone.
+
+**Mobile collapse (≤1024px).** The rail drops into the flow as a compact horizontal card above the body — `position: static`, `padding: 24px 28px`, `background: var(--surface-light)`, `border-radius: var(--r-card)`, no `border-left`. The negative `margin-left` and `border-left` on the links are reset to 0 in the media query so they don't poke into the card padding.
+
+## Article body — embedded structural blocks
+
+The article markdown (.md) source carries raw HTML for visual primitives the prose alone can't express — labeled checklists, tiered decision rows, comparison cases, horizontal step flows. These need first-class CSS support; if the design system doesn't style them, they fall through to bare divs. Documented here as the canonical set.
+
+**Process rule (universal):** before adding a new component class for a markdown-embedded block, **check the design system for an existing pattern that fits the same role.** If `.callout` already handles "labeled chunk with body content," don't invent a parallel `.measurement-card`; map the markdown class to the existing pattern.
+
+### Decision list (`.decision-list`)
+
+A tiered hierarchy of trade-offs — three rows of `<strong>` (category kicker) + `<span>` (one-line guideline). Renders as a structured table-row group in the article flow, NOT a card.
+
+**Anatomy:**
+
+- Container — `display: flex; flex-direction: column`, no background, no border-radius, `border-top: 1px solid var(--border-on-light)`, `counter-reset: decision-rank`.
+- Row — CSS grid `28px 160px 1fr`, 20px column-gap, 14px vertical padding, `border-bottom: 1px solid var(--border-on-light)`, `counter-increment: decision-rank`.
+- `::before` — auto-generated rank in mono 11px brand-orange, `counter(decision-rank, decimal-leading-zero)` → `01 / 02 / 03`. Markdown source stays clean.
+- `<strong>` — mono-caps 11px / 0.2em / dark ink (NOT brand orange — the rank already carries the orange highlight; the kicker as a second orange element competes).
+- `<span>` — Geist 15px / 1.55 / muted body ink.
+- Mobile (≤640px) — 2-column grid (`24px 1fr`), kicker + body stack in the right column.
+
+**Reach for it when** the content shape is "here are three (or more) progressively-applicable tiers" — recommendation cascade, fallback order, severity ladder. **Don't use it for** flat lists (use a regular `<ul>`) or for two-state comparisons (use `.split-cases`).
+
+### Labeled callout / measurement card (`.measurement-card`, `.callout`)
+
+Both class names map to the same shape: a soft-light surface with a brand-orange mono-caps label and dark body text on light. The `.measurement-card` class is a markdown-source name that doesn't match its actual content — it's most often a label + bullet list, not a number callout — so it shares the canonical `.callout` styling.
+
+**Anatomy:**
+
+- Container — `background: var(--surface-light)`, `border: 1px solid var(--border-on-light)`, `border-radius: var(--r-card)`, padding `20px 24px`.
+- Label (`.callout-label` or `.case-label` inside `.measurement-card`) — mono-caps 11px / 0.2em / brand orange, `margin: 0 0 12px`.
+- Body — Geist 15px on light, `--text-on-light-body`.
+- `<ul>` inside — list-style none; each `<li>` carries a brand-orange dash bullet (`::before` with `width: 6px; height: 1px; background: var(--color-primary)`). 8px gap between items.
+- `<code>` inside — on-light code chip (light-grey background, dark text). NOT the on-dark inline-code treatment.
+
+**Accessibility note (lesson logged):** an earlier version of `.measurement-card` used a charcoal surface, which inherited the `.case-label` color rule meant for light surfaces — invisible dark-on-dark text. The mapping above is the canonical fix. Any future "card" class added for a markdown-embedded block must declare both surface and text colors explicitly, never inherit from an existing partial.
+
+### Split cases (`.split-cases`, `.case-card.success`, `.case-card.danger`)
+
+Side-by-side comparison cards, typically before/after or working/failing examples.
+
+- Container `.split-cases` — `display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px`, 28px margin top/bottom. Collapses to single column below 640px.
+- Card `.case-card` — `padding: 20px 24px`, `border-radius: var(--r-card)`, `border: 1px solid`.
+- `.case-card.success` — `background: rgba(74, 222, 128, 0.10); border-color: rgba(74, 222, 128, 0.30)`. Soft-green tint.
+- `.case-card.danger` — `background: rgba(229, 72, 77, 0.10); border-color: rgba(229, 72, 77, 0.30)`. Soft-red tint. (Semantic error-red usage — see § Color.)
+- Inside each: `.case-label` (mono-caps 11px subtle ink) → `<strong>` (Geist 28px / 400 / -0.025em / display ink) → `<span>` (Geist 14px / 1.5 / muted) → `.case-outcome` chip (mono 12px, soft black-on-light surface).
+
+### Article diagram (`.article-diagram`, `.diagram-step`, `.diagram-arrow`)
+
+Horizontal step flow on a charcoal surface — used for request paths, data pipelines, before/after sequences.
+
+- Container — `display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px`, padding 28px, `background: var(--charcoal)`, `border-radius: var(--r-surface-md)`, color `--text-on-dark`.
+- Step (`.diagram-step`) — flex child with internal stack: mono-caps label (`<strong>`) → optional description. `flex: 1 1 auto; min-width: 140px`.
+- Arrow (`.diagram-arrow`) — between-step visual marker, mono "→" glyph in subtle ink.
+- Modifiers — `.is-primary` on a step tints it brand orange; `.is-muted` drops opacity for "context only" steps.
+
+## Section continuation: extension to existing Components → Code Blocks
+
+### Code-text variant (narrative request-flow / response samples)
+
+In § Code Blocks (around line 699 of the spec) add a sub-section after the existing charcoal code-block treatment:
+
+> **`text`-language fences are not code.** Markdown fences of the form ```` ```text ``` ```` typically carry narrative request-flow traces, plain-text response samples, or pseudo-code step lists — content that benefits from monospace structure but doesn't earn the full "terminal window" treatment. Render those with a lighter "code response" shape:
+>
+> ```css
+> .article-body pre:has(> code.language-text) {
+>   background: var(--surface-light);
+>   border: 1px solid var(--border-on-light);
+>   border-left: 3px solid var(--color-primary);
+>   border-radius: 0 var(--r-card) var(--r-card) 0;
+>   color: var(--text-on-light);
+>   font-size: 13px;
+>   line-height: 1.7;
+>   padding: 16px 22px;
+> }
+> ```
+>
+> Charcoal terminal stays the default for `language-python` / `language-js` / `language-bash` / etc. Only `language-text` flips to the soft-light "code response" variant. The brand-orange `border-left: 3px` ties this block visually to the pull-quote (same left-rail accent on the same soft surface) — they're both "structured-but-not-data" inserts. Modern browsers support `:has()` (Chrome/Edge/Safari Aug 2022, Firefox Dec 2023).
+
+## Section continuation: extension to existing Components → Cards
+
+### Pull quote (`.article-body blockquote`)
+
+Soft-light surface with a brand-orange left rail. The quote text vertically centers inside its padding.
+
+```css
+.article-body blockquote {
+  margin: 28px 0;
+  padding: 20px 24px;
+  background: var(--surface-light);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 var(--r-card) var(--r-card) 0;
+  color: var(--text-on-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 64px;
+}
+.article-body blockquote > *:last-child  { margin-bottom: 0; }
+.article-body blockquote > *:first-child { margin-top: 0; }
+```
+
+**Why the flex centering + zero last-child margin matters.** The blockquote contains a `<p>`, and the global `.article-body p` rule sets `margin: 0 0 20px`. Without the rule above, the visible padding ends up 20px on top and 40px on bottom (20 padding + 20 paragraph margin) — visually lopsided. Zeroing the trailing margin and centering with flex gives even visual padding regardless of how many `<p>`s the quote contains.
+
+
 
 Dark hero sections use a **Three.js particle field** as the signature atmospheric layer. Two sanctioned variants — the **primary hero's breathing dome** and the **centered hero's abstract cloud** — each documented below as a reference implementation.
 
@@ -1708,7 +1929,7 @@ The hero `LIVE · v2.4.0` pill is the canonical pattern.
 - Heading levels are sequential — never skip levels.
 
 ### Reduced motion
-Honor `@media (prefers-reduced-motion: reduce)`. Disable: word-reveal animation, typing code animation, WebGL rotation, ticker scroll, hover transforms beyond 1× (keep color shifts).
+Honor `@media (prefers-reduced-motion: reduce)`. Disable: word-reveal animation, typing code animation, WebGL rotation, ticker scroll, hover transforms beyond 1× (keep color shifts), Article TOC active-state `transform: translateX` and color-transition easing (the `.is-active` class still applies — only the motion is suppressed, the orange + bold marker still appears). General rule: any new component that uses `translate*`, scroll-driven transforms, or eased color transitions must include the same `prefers-reduced-motion: reduce` reset.
 
 ### Text selection
 Two-tier `::selection` styling so the highlight color matches content rank:
@@ -1781,6 +2002,8 @@ The two tiers create a visual rank cue at the highlight level: selecting a headi
 - Don't write `videodb` in running prose (use `VideoDB`); the URL `videodb.io` keeps lowercase because it's a domain.
 - Don't use emoji anywhere.
 - Don't use `outline: none` without a replacement focus indicator.
+- **Don't set `color` via inline `style` on an element that needs a CSS `:hover` rule** (or any pseudo-class state). Inline styles win against CSS pseudo-class selectors on specificity, so `:hover` silently never fires. The bug pattern is `<Link style={{ color: "inherit", textDecoration: "none" }}>` — it looks defensive but actually locks the link to its inherited color and disables every CSS-managed state. Use a `className` and let the cascade govern both resting and hover. This rule applies universally: any state CSS would normally manage (`:hover`, `:focus`, `.is-active`, `prefers-reduced-motion`) is undermined by an inline override.
+- **Don't add a markdown-embedded component class without checking whether the design system already has a pattern that fits.** The original `.measurement-card` was styled as a custom 36px-orange-number callout on charcoal; the actual markdown content was a labeled `<ul>`, which the existing `.callout` shape already covers. Result: invisible dark-on-dark text, plus parallel CSS for what should have been one component. Before adding a new class, grep the design system for an existing pattern.
 
 ---
 
@@ -1818,3 +2041,11 @@ The two tiers create a visual rank cue at the highlight level: selecting a headi
 - GSAP + ScrollTrigger for the word reveal and typing code block.
 - Three.js for the WebGL particle dome (r128 confirmed working).
 - The system is mobile-responsive but desktop-first in its editorial cadence — the 2/10 offset collapses on `<md`, the WebGL keeps DPR ≤ 2, and the mega-menu hover bridge is desktop-only (tap navigates directly on mobile).
+
+### Anchor scrolling under sticky headers
+The site-header is `position: sticky; top: 0` and ~50px tall. Anchor scrolls (TOC links, programmatic `#section` navigation) land the target heading flush at viewport top — hidden under the header — unless the target carries `scroll-margin-top`. The rule has two layers:
+
+- **Top-level `<section id>` anchors** — `section[id] { scroll-margin-top: 72px }`. Covers anchor links between page sections.
+- **Inside-article body headings** — `.article-body h2, .article-body h3 { scroll-margin-top: 96px }`. The 96px is header height plus reading buffer; covers TOC clicks that point at in-body headings rather than top-level sections.
+
+If you add a new anchor-receiving heading family anywhere (sidebar headings, in-page tabs, etc.), declare its own `scroll-margin-top` rather than relying on `section[id]`. The default value is 0 — easy to forget, instantly visible as a bug when missed.
